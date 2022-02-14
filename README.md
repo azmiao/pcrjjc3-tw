@@ -4,6 +4,10 @@
 
 新增了分服查询，但目前仍然不想支持一人绑定多号（总觉得会出问题）
 
+之前fork来的简单修改版（一般来说不会用的吧，也懒得更新了）：
+
+[pcrjjc-tw_for_3_server](https://github.com/azmiao/pcrjjc-tw_for_3_server)
+
 ## 重点注意
 
 本插件和pcrjjc2的绑定信息文件（即自动生成的`binds.json`）的数据结构稍有区别，无法通用。
