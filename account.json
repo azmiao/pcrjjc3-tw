@@ -1,0 +1,6 @@
+{
+    "proxy": {
+        "http": "localhost:1080",
+        "https": "localhost:1080"
+    }
+}
