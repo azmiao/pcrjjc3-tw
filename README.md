@@ -13,6 +13,16 @@
 "cx": "1"
 ```
 
+## 支持版本
+
+目前支持游戏版本：3.1.0
+
+和之前的pcrjjc2一样，若后续游戏版本更新请自己打开`pcrclient.py`文件第18行
+```
+    'APP-VER' : '3.1.0',
+```
+修改游戏版本为当前最新，然后重启hoshinobot即可
+
 ## 配置方法
 
 1. 拿个不用的号登录PCR，然后把data/data/tw.sonet.princessconnect/shared_prefs/tw.sonet.princessconnect.v2.playerprefs.xml复制到该目录
