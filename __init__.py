@@ -9,6 +9,7 @@ from copy import deepcopy
 from traceback import format_exc
 from .safeservice import SafeService
 from .playerpref import decryptxml
+from ..priconne import chara
 import time
 
 sv_help = '''
