@@ -176,8 +176,8 @@ async def on_query_arena(bot, ev):
             
             await bot.finish(ev, 
 f'''昵称：{res['user_info']["user_name"]}
-jjc：{res['user_info']["arena_rank"]}
-pjjc：{res['user_info']["grand_arena_rank"]}
+jjc排名：{res['user_info']["arena_rank"]}
+pjjc排名：{res['user_info']["grand_arena_rank"]}
 最后登录：{last_login_str}''', at_sender=False)
         except ApiException as e:
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
