@@ -12,8 +12,8 @@ from .playerpref import decryptxml
 from ..priconne import chara
 import time
 
-sv_help = 
-'''注意：3cx中的3为服务器编号，支持1、2、3或4
+sv_help = '''
+注意：3cx中的3为服务器编号，支持1、2、3或4
 “+”号不用输入，也不要留空格
 
 [竞技场绑定+3cx+uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
