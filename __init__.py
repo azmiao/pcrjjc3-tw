@@ -148,6 +148,20 @@ async def on_arena_bind(bot, ev):
 
     await bot.finish(ev, '竞技场绑定成功', at_sender=True)
 
+async def get_cx_name(cx):
+    if cx == '1':
+        cx_name = '美食殿堂'
+        return cx_name
+    elif cx == '2':
+        cx_name = '真步真步王国'
+        return cx_name
+    elif cx == '3':
+        cx_name = '破晓之星'
+        return cx_name
+    elif cx == '4':
+        cx_name = '小小甜心'
+        return cx_name
+
 @sv.on_rex(r'^竞技场查询 ?(\d{1})?(cx)?(\d{9})?$')
 async def on_query_arena(bot, ev):
     global binds, lck
@@ -155,6 +169,7 @@ async def on_query_arena(bot, ev):
     robj = ev['match']
     cx = robj.group(1)
     id = robj.group(3)
+    cx_name = await get_cx_name(cx)
 
     async with lck:
         if id == None and cx == None:
@@ -165,6 +180,7 @@ async def on_query_arena(bot, ev):
             else:
                 id = binds[uid]['id']
                 cx = binds[uid]['cx']
+                cx_name = await get_cx_name(cx)
         try:
             res = await query(cx, id)
             
@@ -176,7 +192,8 @@ async def on_query_arena(bot, ev):
             last_login_str = time.strftime('%Y-%m-%d %H:%M:%S',last_login_date)
             
             await bot.finish(ev, 
-f'''昵称：{res['user_info']["user_name"]}
+f'''区服：{cx_name}
+昵称：{res['user_info']["user_name"]}
 jjc排名：{res['user_info']["arena_rank"]}
 pjjc排名：{res['user_info']["grand_arena_rank"]}
 最后登录：{last_login_str}''', at_sender=False)
@@ -190,6 +207,7 @@ async def on_query_arena_all(bot, ev):
     robj = ev['match']
     cx = robj.group(1)
     id = robj.group(3)
+    cx_name = await get_cx_name(cx)
 
     async with lck:
         if id == None and cx == None:
@@ -200,6 +218,7 @@ async def on_query_arena_all(bot, ev):
             else:
                 id = binds[uid]['id']
                 cx = binds[uid]['cx']
+                cx_name = await get_cx_name(cx)
         try:
             res = await query(cx, id)
             if res == 'lack shareprefs':
@@ -262,7 +281,8 @@ async def on_query_arena_all(bot, ev):
                 msg_cl4 = ''
             
             await bot.finish(ev, 
-f'''id：{res['user_info']['viewer_id']}
+f'''区服：{cx_name}
+id：{res['user_info']['viewer_id']}
 昵称：{res['user_info']['user_name']}
 公会：{res['clan_name']}
 简介：{res['user_info']['user_comment']}
