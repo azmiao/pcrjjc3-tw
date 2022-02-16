@@ -159,7 +159,7 @@ async def get_cx_name(cx):
         cx_name = '破晓之星'
         return cx_name
     elif cx == '4':
-        cx_name = '真步真步王国'
+        cx_name = '小小甜心'
         return cx_name
 
 @sv.on_rex(r'^竞技场查询 ?(\d{1})?(cx)?(\d{9})?$')
