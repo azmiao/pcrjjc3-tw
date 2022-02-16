@@ -13,18 +13,18 @@ from ..priconne import chara
 import time
 
 sv_help = '''
-注意：下方uid格式样例：[3cx(原uid)]
-(其中3为服务器编号，支持1或2或3或4)
+注意：3cx中的3为服务器编号，支持1、2、3或4
+“+”号不用输入，也不要留空格
 
-[竞技场绑定 uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
-[竞技场查询 (uid)] 查询竞技场简要信息
+[竞技场绑定+3cx+uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
+[竞技场查询+3cx+uid] 查询竞技场简要信息（绑定后无需输入3cx+uid）
 [停止竞技场订阅] 停止战斗竞技场排名变动推送
 [停止公主竞技场订阅] 停止公主竞技场排名变动推送
 [启用竞技场订阅] 启用战斗竞技场排名变动推送
 [启用公主竞技场订阅] 启用公主竞技场排名变动推送
 [删除竞技场订阅] 删除竞技场排名变动推送绑定
 [竞技场订阅状态] 查看排名变动推送绑定状态
-[详细查询 (uid)] 查询账号详细信息
+[详细查询+3cx+uid] 查询账号详细信息（绑定后无需输入3cx+uid）
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
 [清空竞技场订阅] 清空所有绑定的账号(仅限主人)
@@ -352,7 +352,7 @@ async def send_arena_sub_status(bot,ev):
     公主竞技场订阅：{'开启' if info['grand_arena_on'] else '关闭'}''',at_sender=True)
 
 
-@sv.scheduled_job('interval', minutes=2)
+@sv.scheduled_job('interval', minutes=3)
 async def on_arena_schedule():
     global cache, binds, lck
     bot = get_bot()
