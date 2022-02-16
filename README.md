@@ -31,7 +31,7 @@
 [启用公主竞技场订阅] 启用公主竞技场排名变动推送
 [删除竞技场订阅] 删除竞技场排名变动推送绑定
 [竞技场订阅状态] 查看排名变动推送绑定状态
-[详细查询 (uid)] 查询账号详细状态
+[详细查询 (uid)] 查询账号详细信息
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
 [清空竞技场订阅] 清空所有绑定的账号(仅限主人)
@@ -56,11 +56,11 @@
     台服一服：
     1cx_tw.sonet.princessconnect.v2.playerprefs.xml
     台服二服：
-    1cx_tw.sonet.princessconnect.v2.playerprefs.xml
+    2cx_tw.sonet.princessconnect.v2.playerprefs.xml
     台服三服：
-    1cx_tw.sonet.princessconnect.v2.playerprefs.xml
+    3cx_tw.sonet.princessconnect.v2.playerprefs.xml
     台服四服：
-    1cx_tw.sonet.princessconnect.v2.playerprefs.xml
+    4cx_tw.sonet.princessconnect.v2.playerprefs.xml
     ```
     如果没有某个服的配置文件或者不需要该服就不用管
 
