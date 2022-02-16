@@ -12,8 +12,7 @@ from .playerpref import decryptxml
 from ..priconne import chara
 import time
 
-sv_help = '''
-注意：3cx中的3为服务器编号，支持1、2、3或4
+sv_help = '''注意：3cx中的3为服务器编号，支持1、2、3或4
 “+”号不用输入，也不要留空格
 
 [竞技场绑定+3cx+uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
@@ -27,8 +26,7 @@ sv_help = '''
 [详细查询+3cx+uid] 查询账号详细信息（绑定后无需输入3cx+uid）
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
-[清空竞技场订阅] 清空所有绑定的账号(仅限主人)
-'''.strip()
+[清空竞技场订阅] 清空所有绑定的账号(仅限主人)'''.strip()
 
 sv = SafeService('竞技场推送_tw', help_=sv_help, bundle='pcr查询')
 
