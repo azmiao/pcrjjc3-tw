@@ -2,7 +2,7 @@
 
 本插件是[pcrjjc2](https://github.com/cc004/pcrjjc2/tree/tw)的修改版
 
-新增了分服查询，但目前仍然不想支持一人绑定多号（总觉得会出问题）
+新增了分服查询，并将由[@CYDXDianXian](https://github.com/CYDXDianXian)大佬新增的支援角色头像修改为一张整合图
 
 之前fork来的简单修改版（一般来说不会用的吧，也懒得更新了）：
 
@@ -16,6 +16,13 @@
 ```
 "cx": "1"
 ```
+
+另外，和pcrjjc2一样，由于使用了不验证ssl的方式，因此可能产生ssl的验证warning (issue #1)，可采用在hoshino文件夹下的`aiorequests.py`文件内加上几行：
+```
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+```
+来禁止该warning显示
 
 ## 命令
 
@@ -51,6 +58,8 @@
 ## 配置方法
 
 1. 拿个不用的号登录PCR，然后把data/data/tw.sonet.princessconnect/shared_prefs/tw.sonet.princessconnect.v2.playerprefs.xml复制到该目录
+
+    注意：每个服对应一个账号配置文件，并且每个号至少得开启加好友功能，四个服就要四份不同服的文件
 
 2. 给你的tw.sonet.princessconnect.v2.playerprefs.xml加上前缀名，例如：
     ```
