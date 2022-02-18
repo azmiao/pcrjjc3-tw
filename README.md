@@ -17,7 +17,7 @@
 "cx": "1"
 ```
 
-另外，和pcrjjc2一样，由于使用了不验证ssl的方式，因此可能产生ssl的验证warning (issue #1)，可采用在hoshino文件夹下的`aiorequests.py`文件内加上几行：
+另外，和pcrjjc2一样，由于使用了不验证ssl的方式，因此可能产生ssl的验证warning [issue #7](https://github.com/azmiao/pcrjjc3-tw/issues/7)，可采用在hoshino文件夹下的`aiorequests.py`文件内加上几行：
 ```
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
