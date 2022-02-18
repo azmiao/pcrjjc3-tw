@@ -1,7 +1,7 @@
 from json import load, dump
 from nonebot import get_bot, on_command
-from hoshino import priv
-from hoshino.typing import NoticeSession
+from hoshino import priv, R
+from hoshino.typing import NoticeSession, MessageSegment
 from .pcrclient import pcrclient, ApiException
 from asyncio import Lock
 from os.path import dirname, join, exists
@@ -10,6 +10,7 @@ from traceback import format_exc
 from .safeservice import SafeService
 from .playerpref import decryptxml
 from ..priconne import chara
+from .create_img import generate_img
 import time
 
 sv_help = '''
@@ -237,49 +238,61 @@ async def on_query_arena_all(bot, ev):
             last_login_str = time.strftime('%Y-%m-%d %H:%M:%S',last_login_date)
             
             # 获取支援角色信息，若玩家未设置则留空
+            blank_img = R.img(f'priconne/unit/icon_unit_100031.png').path
+            img_data = {'f':{}, 'fr1':{}, 'fr2':{}, 'cl1':{}, 'cl2':{}, 'cl3':{}, 'cl4':{}, 'blank':blank_img}
             try:    
                 id_favorite = int(str(res['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
                 c_favorite = chara.fromid(id_favorite)
-                msg_f = f'{c_favorite.name}{c_favorite.icon.cqcode}'
+                pic_dir = c_favorite.icon.path
+                img_data['f'][c_favorite.name] = pic_dir
             except:
-                msg_f = ''
+                pass
             try:
                 id_friend_support1 = int(str(res['friend_support_units'][0]['unit_data']['id'])[0:4])
                 c_friend_support1 = chara.fromid(id_friend_support1)
-                msg_fr1 = f'{c_friend_support1.name}{c_friend_support1.icon.cqcode}'
+                pic_dir = c_friend_support1.icon.path
+                img_data['fr1'][c_friend_support1.name] = pic_dir
             except:
-                msg_fr1 = ''
+                pass
             try:
                 id_friend_support2 = int(str(res['friend_support_units'][1]['unit_data']['id'])[0:4])
                 c_friend_support2 = chara.fromid(id_friend_support2)
-                msg_fr2 = f'{c_friend_support2.name}{c_friend_support2.icon.cqcode}'
+                pic_dir = c_friend_support2.icon.path
+                img_data['fr2'][c_friend_support2.name] = pic_dir
             except:
-                msg_fr2 = ''
+                pass
             try:
                 id_clan_support1 = int(str(res['clan_support_units'][0]['unit_data']['id'])[0:4])
                 c_clan_support1 = chara.fromid(id_clan_support1)
-                msg_cl1 = f'{c_clan_support1.name}{c_clan_support1.icon.cqcode}'
+                pic_dir = c_clan_support1.icon.path
+                img_data['cl1'][c_clan_support1.name] = pic_dir
             except:
-                msg_cl1 = ''
+                pass
             try:
                 id_clan_support2 = int(str(res['clan_support_units'][1]['unit_data']['id'])[0:4])
                 c_clan_support2 = chara.fromid(id_clan_support2)
-                msg_cl2 = f'{c_clan_support2.name}{c_clan_support2.icon.cqcode}'
+                pic_dir = c_clan_support2.icon.path
+                img_data['cl2'][c_clan_support2.name] = pic_dir
             except:
-                msg_cl2 = ''
+                pass
             try:
                 id_clan_support3 = int(str(res['clan_support_units'][2]['unit_data']['id'])[0:4])
                 c_clan_support3 = chara.fromid(id_clan_support3)
-                msg_cl3 = f'{c_clan_support3.name}{c_clan_support3.icon.cqcode}'
+                pic_dir = c_clan_support3.icon.path
+                img_data['cl3'][c_clan_support3.name] = pic_dir
             except:
-                msg_cl3 = ''
+                pass
             try:
                 id_clan_support4 = int(str(res['clan_support_units'][3]['unit_data']['id'])[0:4])
                 c_clan_support4 = chara.fromid(id_clan_support4)
-                msg_cl4 = f'{c_clan_support4.name}{c_clan_support4.icon.cqcode}'
+                pic_dir = c_clan_support4.icon.path
+                img_data['cl4'][c_clan_support4.name] = pic_dir
             except:
-                msg_cl4 = ''
+                pass
             
+            img = await generate_img(img_data)
+            img = MessageSegment.image("base64://" + img)
+
             await bot.finish(ev, 
 f'''区服：{cx_name}
 id：{res['user_info']['viewer_id']}
@@ -296,14 +309,7 @@ jjc创建日：{arena_str}
 pjjc场次：{res['user_info']['grand_arena_group']}
 pjjc创建日：{grand_arena_str}
 角色数：{res['user_info']['unit_num']}
-【最爱的角色】
-{msg_f}
-【好友支援角色】
-{msg_fr1}{msg_fr2}
-【地下城支援角色】
-{msg_cl1}{msg_cl2}
-【战队支援角色】
-{msg_cl3}{msg_cl4}''', at_sender=False)
+{img}''', at_sender=False)
         except ApiException as e:
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
