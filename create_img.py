@@ -59,19 +59,19 @@ async def generate_img(img_data) -> str:
     # 修补用的白色格子
     img_repair = CreateImg(100, 100, color='white')
     # 创建四条画布
-    card_head = CreateImg(500, 100, 300, 100)
+    card_head = CreateImg(500, 100, 250, 100)
     card_img_0 = CreateImg(500, 100, 100, 100)
-    card_body = CreateImg(500, 100, 300, 100)
+    card_body = CreateImg(500, 100, 250, 100)
     card_img_1 = CreateImg(500, 100, 100, 100)
 
     # 第一排01：最爱的角色
     try:
         c_favorite_name = list(img_data['f'].keys())[0]
         c_favorite_img = img_data['f'][c_favorite_name]
-        head_f = CreateImg(300, 100, color='white',text=f'最爱的角色：\n\n{c_favorite_name}')
+        head_f = CreateImg(250, 100, color='white',text=f'最爱的角色：\n\n{c_favorite_name}')
         img_f = CreateImg(100, 100, background = c_favorite_img)
     except:
-        head_f = CreateImg(300, 100, color='white',text=f'最爱的角色：\n\n(无)')
+        head_f = CreateImg(250, 100, color='white',text=f'最爱的角色：\n\n(无)')
         img_f = img_b
     # 第一排02：好友支援角色
     try:
@@ -92,7 +92,7 @@ async def generate_img(img_data) -> str:
         img_fr2 = img_b
     # 第一排填充
     card_head.paste(head_f)
-    head_fr = CreateImg(300, 100, color='white',text=f'好友支援角色：\n{text_fr1}\n{text_fr2}')
+    head_fr = CreateImg(250, 100, color='white',text=f'好友支援角色：\n{text_fr1}\n{text_fr2}')
     card_head.paste(head_fr)
     # 最爱头像
     card_img_0.paste(img_f)
@@ -138,10 +138,10 @@ async def generate_img(img_data) -> str:
         text_cl4 = '无'
         img_cl4 = img_b
     # 第二排填充
-    body_cl12 = CreateImg(300, 100, color='white',text=f'地下城支援角色：\n{text_cl1}\n{text_cl2}')
+    body_cl12 = CreateImg(250, 100, color='white',text=f'地下城支援角色：\n{text_cl1}\n{text_cl2}')
     card_body.paste(body_cl12)
     # 修补两格
-    body_cl34 = CreateImg(300, 100, color='white',text=f'战队支援角色：\n{text_cl3}\n{text_cl4}')
+    body_cl34 = CreateImg(250, 100, color='white',text=f'战队支援角色：\n{text_cl3}\n{text_cl4}')
     card_body.paste(body_cl34)
     # 地下城支援头像
     card_img_1.paste(img_cl1)
