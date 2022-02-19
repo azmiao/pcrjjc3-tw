@@ -91,3 +91,5 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 2022-02-16：[更详细的详细查询，支持查询支援角色](https://github.com/azmiao/pcrjjc3-tw/commit/c0eb4d969a5212db51c422b8155c94bbb0a6a823)，[查询信息中新增获取账号所在区服](https://github.com/azmiao/pcrjjc3-tw/commit/5f1e3d4a13f5b35bb7838221d1114a366f420ee9)，[修复KeyError: 'favorite_unit'报错](https://github.com/azmiao/pcrjjc3-tw/commit/d903a06c03f6d1aaf37ddf5ffcc7afad8157eaa3) 
 
+2022-02-14：[update 2333](https://github.com/azmiao/pcrjjc3-tw/commit/59a780891926eddce225f984e4d2b578803cdd06)，[啊哈哈哈，寄汤来咯](https://github.com/azmiao/pcrjjc3-tw/commit/84568f9ff5db897fd14e509da77a7d2aa438ae08)，[为什么是requirement.txt而没有s，这不是复数吗](https://github.com/azmiao/pcrjjc3-tw/commit/ee4a79c844c23cf348db53e9d5d833f6b3f42797)
+
