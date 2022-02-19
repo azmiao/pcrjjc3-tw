@@ -14,18 +14,18 @@ from .create_img import generate_img
 import time
 
 sv_help = '''
-注意：3cx中的3为服务器编号，支持1、2、3或4
-“+”号不用输入，也不要留空格
+注意：数字3为服务器编号，支持1、2、3或4
+关键词之间可以留空格也可以不留
 
-[竞技场绑定+3cx+uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
-[竞技场查询+3cx+uid] 查询竞技场简要信息（绑定后无需输入3cx+uid）
+[竞技场绑定 3 uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
+[竞技场查询 3 uid] 查询竞技场简要信息（绑定后无需输入3 uid）
 [停止竞技场订阅] 停止战斗竞技场排名变动推送
 [停止公主竞技场订阅] 停止公主竞技场排名变动推送
 [启用竞技场订阅] 启用战斗竞技场排名变动推送
 [启用公主竞技场订阅] 启用公主竞技场排名变动推送
 [删除竞技场订阅] 删除竞技场排名变动推送绑定
 [竞技场订阅状态] 查看排名变动推送绑定状态
-[详细查询+3cx+uid] 查询账号详细信息（绑定后无需输入3cx+uid）
+[详细查询 3 uid] 查询账号详细信息（绑定后无需输入3 uid）
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
 [清空竞技场订阅] 清空所有绑定的账号(仅限主人)
@@ -125,7 +125,7 @@ async def pcrjjc_del(bot, ev):
             save_binds()
             await bot.send(ev, f'已清空全部【{num}】个已订阅账号！')
 
-@sv.on_rex(r'^竞技场绑定 ?(\d{1})cx(\d{9})$')
+@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\d{9})$') # 支持匹配空格，空格可有可无且长度无限制
 async def on_arena_bind(bot, ev):
     global binds, lck
 
@@ -163,13 +163,13 @@ async def get_cx_name(cx):
         cx_name = '小小甜心'
         return cx_name
 
-@sv.on_rex(r'^竞技场查询 ?(\d{1})?(cx)?(\d{9})?$')
+@sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena(bot, ev):
     global binds, lck
 
     robj = ev['match']
     cx = robj.group(1)
-    id = robj.group(3)
+    id = robj.group(2)
     cx_name = await get_cx_name(cx)
 
     async with lck:
@@ -201,13 +201,13 @@ pjjc排名：{res['user_info']["grand_arena_rank"]}
         except ApiException as e:
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
-@sv.on_rex(r'^详细查询 ?(\d{1})?(cx)?(\d{9})?$')
+@sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena_all(bot, ev):
     global binds, lck
 
     robj = ev['match']
     cx = robj.group(1)
-    id = robj.group(3)
+    id = robj.group(2)
     cx_name = await get_cx_name(cx)
 
     async with lck:
