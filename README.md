@@ -82,3 +82,12 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 4. 配置account.json设置代理：localhost就行，只要改端口，自行更换和你代理软件代理的端口一样就行，是代理端口哦，不是软件监听端口，开PAC模式不改变系统代理就行
 
 5. 开启插件，并重启Hoshino即可食用
+
+## 更新日志
+
+2022-02-19：[优化并简化触发命令结构，可支持空格](https://github.com/azmiao/pcrjjc3-tw/commit/bc8413d944cdf4c17be62532494470878c9c9072)
+
+2022-02-18：[更新README，并整合支援头像为一张图，](https://github.com/azmiao/pcrjjc3-tw/commit/98157067f590bb351c868c71bba3848b79afe80e)[close](https://github.com/azmiao/pcrjjc3-tw/commit/98157067f590bb351c868c71bba3848b79afe80e) [#7](https://github.com/azmiao/pcrjjc3-tw/issues/7)，[为了让时空祈梨能够完整显示日文名，调整了下位置，字体大小自适应以后再写吧2333](https://github.com/azmiao/pcrjjc3-tw/commit/3db3f161d835114247f12bc51ae2cdb08549be8c)
+
+2022-02-16：[更详细的详细查询，支持查询支援角色](https://github.com/azmiao/pcrjjc3-tw/commit/c0eb4d969a5212db51c422b8155c94bbb0a6a823)，[查询信息中新增获取账号所在区服](https://github.com/azmiao/pcrjjc3-tw/commit/5f1e3d4a13f5b35bb7838221d1114a366f420ee9)，[修复KeyError: 'favorite_unit'报错](https://github.com/azmiao/pcrjjc3-tw/commit/d903a06c03f6d1aaf37ddf5ffcc7afad8157eaa3) 
+
