@@ -1,6 +1,6 @@
 from json import load, dump
-from nonebot import get_bot, on_command
-from hoshino import priv, R
+from nonebot import get_bot
+from hoshino import priv
 from hoshino.typing import NoticeSession, MessageSegment
 from .pcrclient import pcrclient, ApiException
 from asyncio import Lock
@@ -9,8 +9,8 @@ from copy import deepcopy
 from traceback import format_exc
 from .safeservice import SafeService
 from .playerpref import decryptxml
-from ..priconne import chara
-from .create_img import generate_img
+from .create_img import generate_info_pic, generate_support_pic, get_cx_name
+from hoshino.util import pic2b64
 import time
 
 sv_help = '''
@@ -149,20 +149,6 @@ async def on_arena_bind(bot, ev):
 
     await bot.finish(ev, '竞技场绑定成功', at_sender=True)
 
-async def get_cx_name(cx):
-    if cx == '1':
-        cx_name = '美食殿堂'
-        return cx_name
-    elif cx == '2':
-        cx_name = '真步真步王国'
-        return cx_name
-    elif cx == '3':
-        cx_name = '破晓之星'
-        return cx_name
-    elif cx == '4':
-        cx_name = '小小甜心'
-        return cx_name
-
 @sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena(bot, ev):
     global binds, lck
@@ -208,7 +194,6 @@ async def on_query_arena_all(bot, ev):
     robj = ev['match']
     cx = robj.group(1)
     id = robj.group(2)
-    cx_name = await get_cx_name(cx)
 
     async with lck:
         if id == None and cx == None:
@@ -219,97 +204,23 @@ async def on_query_arena_all(bot, ev):
             else:
                 id = binds[uid]['id']
                 cx = binds[uid]['cx']
-                cx_name = await get_cx_name(cx)
         try:
             res = await query(cx, id)
             if res == 'lack shareprefs':
                 await bot.finish(ev, f'查询出错，缺少该服的配置文件', at_sender=True)
                 return
-            arena_time = int (res['user_info']['arena_time'])
-            arena_date = time.localtime(arena_time)
-            arena_str = time.strftime('%Y-%m-%d',arena_date)
-
-            grand_arena_time = int (res['user_info']['grand_arena_time'])
-            grand_arena_date = time.localtime(grand_arena_time)
-            grand_arena_str = time.strftime('%Y-%m-%d',grand_arena_date)
-            
-            last_login_time = int (res['user_info']['last_login_time'])
-            last_login_date = time.localtime(last_login_time)
-            last_login_str = time.strftime('%Y-%m-%d %H:%M:%S',last_login_date)
-            
-            # 获取支援角色信息，若玩家未设置则留空
-            blank_img = R.img(f'priconne/unit/icon_unit_100031.png').path
-            img_data = {'f':{}, 'fr1':{}, 'fr2':{}, 'cl1':{}, 'cl2':{}, 'cl3':{}, 'cl4':{}, 'blank':blank_img}
-            try:    
-                id_favorite = int(str(res['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
-                c_favorite = chara.fromid(id_favorite)
-                pic_dir = c_favorite.icon.path
-                img_data['f'][c_favorite.name] = pic_dir
-            except:
-                pass
+            sv.logger.info('开始生成竞技场查询图片...') # 通过log显示信息
+            result_image = await generate_info_pic(res, cx)
+            result_image = pic2b64(result_image) # 转base64发送，不用将图片存本地
+            result_image = MessageSegment.image(result_image)
+            result_support = await generate_support_pic(res)
+            result_support = pic2b64(result_support) # 转base64发送，不用将图片存本地
+            result_support = MessageSegment.image(result_support)
+            sv.logger.info('竞技场查询图片已准备完毕！')
             try:
-                id_friend_support1 = int(str(res['friend_support_units'][0]['unit_data']['id'])[0:4])
-                c_friend_support1 = chara.fromid(id_friend_support1)
-                pic_dir = c_friend_support1.icon.path
-                img_data['fr1'][c_friend_support1.name] = pic_dir
-            except:
-                pass
-            try:
-                id_friend_support2 = int(str(res['friend_support_units'][1]['unit_data']['id'])[0:4])
-                c_friend_support2 = chara.fromid(id_friend_support2)
-                pic_dir = c_friend_support2.icon.path
-                img_data['fr2'][c_friend_support2.name] = pic_dir
-            except:
-                pass
-            try:
-                id_clan_support1 = int(str(res['clan_support_units'][0]['unit_data']['id'])[0:4])
-                c_clan_support1 = chara.fromid(id_clan_support1)
-                pic_dir = c_clan_support1.icon.path
-                img_data['cl1'][c_clan_support1.name] = pic_dir
-            except:
-                pass
-            try:
-                id_clan_support2 = int(str(res['clan_support_units'][1]['unit_data']['id'])[0:4])
-                c_clan_support2 = chara.fromid(id_clan_support2)
-                pic_dir = c_clan_support2.icon.path
-                img_data['cl2'][c_clan_support2.name] = pic_dir
-            except:
-                pass
-            try:
-                id_clan_support3 = int(str(res['clan_support_units'][2]['unit_data']['id'])[0:4])
-                c_clan_support3 = chara.fromid(id_clan_support3)
-                pic_dir = c_clan_support3.icon.path
-                img_data['cl3'][c_clan_support3.name] = pic_dir
-            except:
-                pass
-            try:
-                id_clan_support4 = int(str(res['clan_support_units'][3]['unit_data']['id'])[0:4])
-                c_clan_support4 = chara.fromid(id_clan_support4)
-                pic_dir = c_clan_support4.icon.path
-                img_data['cl4'][c_clan_support4.name] = pic_dir
-            except:
-                pass
-            
-            img = await generate_img(img_data)
-            img = MessageSegment.image("base64://" + img)
-
-            await bot.finish(ev, 
-f'''区服：{cx_name}
-id：{res['user_info']['viewer_id']}
-昵称：{res['user_info']['user_name']}
-公会：{res['clan_name']}
-简介：{res['user_info']['user_comment']}
-最后登录：{last_login_str}
-jjc排名：{res['user_info']['arena_rank']}
-pjjc排名：{res['user_info']['grand_arena_rank']}
-战力：{res['user_info']['total_power']}
-等级：{res['user_info']['team_level']}
-jjc场次：{res['user_info']['arena_group']}
-jjc创建日：{arena_str}
-pjjc场次：{res['user_info']['grand_arena_group']}
-pjjc创建日：{grand_arena_str}
-角色数：{res['user_info']['unit_num']}
-{img}''', at_sender=False)
+                await bot.finish(ev, f"\n{str(result_image)}\n{result_support}", at_sender=True)
+            except Exception as e:
+                sv.logger.info("do nothing")
         except ApiException as e:
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
