@@ -94,4 +94,6 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 2022-02-14：[update 2333](https://github.com/azmiao/pcrjjc3-tw/commit/59a780891926eddce225f984e4d2b578803cdd06)，[啊哈哈哈，寄汤来咯](https://github.com/azmiao/pcrjjc3-tw/commit/84568f9ff5db897fd14e509da77a7d2aa438ae08)，[为什么是requirement.txt而没有s，这不是复数吗](https://github.com/azmiao/pcrjjc3-tw/commit/ee4a79c844c23cf348db53e9d5d833f6b3f42797)
 
 ## 图片预览
+![4@{%Z%591B` YE1%}H0E7@1](https://user-images.githubusercontent.com/71607036/154960896-1d183705-0805-4f80-9cf2-6de13d35c5c3.jpg)
 
+![FQ~} OTM$L20L6DAEI~RN`K](https://user-images.githubusercontent.com/71607036/154960912-6fd4f1fb-df38-4ef6-997c-af01b71810f4.PNG)
