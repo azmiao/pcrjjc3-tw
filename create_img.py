@@ -22,6 +22,9 @@ def cut_str(obj: str, sec: int):
     return [obj[i: i+sec] for i in range(0, len(obj), sec)]
 
 async def get_cx_name(cx):
+    '''
+    获取服务器名称
+    '''
     if cx == '1':
         cx_name = '美食殿堂'
         return cx_name
