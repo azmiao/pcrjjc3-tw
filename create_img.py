@@ -36,6 +36,9 @@ async def get_cx_name(cx):
         return cx_name
 
 async def generate_info_pic(data, cx):
+    '''
+    个人资料卡生成
+    '''
     im = Image.open(path / 'img' / 'template.png') # 图片模板
     im_frame = Image.open(path / 'img' / 'frame.png') # 头像框
     try:
@@ -188,7 +191,7 @@ async def friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
 
 async def clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     '''
-    地下城支援位置
+    地下城以及战队支援位
     '''
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
