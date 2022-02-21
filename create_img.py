@@ -47,7 +47,7 @@ async def generate_info_pic(data, cx):
     try:
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
-        id_favorite = 1000 # 一个？角色
+        id_favorite = 1000 # 一个未知角色头像
     pic_dir = chara.fromid(id_favorite).icon.path
     user_avatar = Image.open(pic_dir)
     user_avatar = user_avatar.resize((90, 90))
