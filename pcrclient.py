@@ -1,3 +1,4 @@
+import json
 from msgpack import packb, unpackb
 from random import randint
 from hashlib import md5, sha1
@@ -5,6 +6,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
 from base64 import b64encode, b64decode
 from random import choice
+from pathlib import Path
 
 from msgpack.exceptions import ExtraData
 from hoshino.aiorequests import post
@@ -136,6 +138,12 @@ class pcrclient:
                 raise ApiException(data['message'], data['status'])
 
             print(f'pcrclient: {apiurl} api called')
+
+            # 生成角色信息json文件，用于调试
+            # json_data = json.dumps(data, indent=4, ensure_ascii=False)
+            # data_path =  Path(__file__).parent / 'res_data.json'
+            # data_path.write_text(json_data, encoding="utf-8")
+
             return data
         except:
             self.shouldLogin = True
