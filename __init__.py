@@ -9,7 +9,7 @@ from copy import deepcopy
 from traceback import format_exc
 from .safeservice import SafeService
 from .playerpref import decryptxml
-from .create_img import generate_info_pic, generate_support_pic, get_cx_name
+from .create_img import generate_info_pic, generate_support_pic, _get_cx_name
 from hoshino.util import pic2b64
 import time
 
@@ -156,7 +156,7 @@ async def on_query_arena(bot, ev):
     robj = ev['match']
     cx = robj.group(1)
     id = robj.group(2)
-    cx_name = await get_cx_name(cx)
+    cx_name = _get_cx_name(cx)
 
     async with lck:
         if id == None and cx == None:
@@ -167,7 +167,7 @@ async def on_query_arena(bot, ev):
             else:
                 id = binds[uid]['id']
                 cx = binds[uid]['cx']
-                cx_name = await get_cx_name(cx)
+                cx_name = _get_cx_name(cx)
         try:
             res = await query(cx, id)
             
