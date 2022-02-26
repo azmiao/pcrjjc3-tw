@@ -43,7 +43,6 @@ def _get_cx_name(cx):
         cx_name = '未知服务器'
         return cx_name
 
-# async def generate_info_pic(data, cx):
 def _generate_info_pic_internal(data, cx):
     '''
     个人资料卡生成
