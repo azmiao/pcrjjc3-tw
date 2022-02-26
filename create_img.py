@@ -172,32 +172,6 @@ def _generate_info_pic_internal(data, cx):
 
     return im
 
-async def friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
-    '''
-    好友支援位
-    '''
-    # 合成头像
-    im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
-    id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
-    pic_dir = chara.fromid(id_friend_support).icon.path
-    avatar = Image.open(pic_dir)
-    avatar = avatar.resize((115, 115))
-    im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
-    im_frame = im_frame.resize((128, 128))
-    im_yuansu.paste(im=im_frame, box=(22, 72), mask=im_frame)
-
-    # 合成文字信息
-    yuansu_draw = ImageDraw.Draw(im_yuansu)
-    icon_name_text = _TraditionalToSimplified(chara.fromid(id_friend_support).name)
-    icon_LV_text = str(fr_data['unit_data']['unit_level']) # 写入文本必须是str格式
-    icon_rank_text = str(fr_data['unit_data']['promotion_level'])
-    yuansu_draw.text(xy=(167, 36.86), text=icon_name_text, font=fnt, fill=rgb)
-    yuansu_draw.text(xy=(340, 101.8), text=icon_LV_text, font=fnt, fill=rgb)
-    yuansu_draw.text(xy=(340, 159.09), text=icon_rank_text, font=fnt, fill=rgb)
-    im.paste(im=im_yuansu, box=bbox) # 无A通道的图不能输入mask
-
-    return im
-
 def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     '''
     好友支援位
