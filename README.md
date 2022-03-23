@@ -6,6 +6,10 @@
 
 [pcrjjc-tw_for_3_server](https://github.com/azmiao/pcrjjc-tw_for_3_server)
 
+## 如何更新
+
+一直摸兜里，直接`git pull`就完事了
+
 ## 重点注意
 
 本插件和pcrjjc2的绑定信息文件（即自动生成的`binds.json`）的数据结构稍有区别，无法通用。

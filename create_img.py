@@ -48,13 +48,13 @@ def _generate_info_pic_internal(data, cx):
     个人资料卡生成
     '''
     im = Image.open(path / 'img' / 'template.png') # 图片模板
-    im_frame = Image.open(path / 'img' / 'frame.png') # 头像框
+    im_frame = Image.open(path / 'img' / 'frame.png').convert("RGBA") # 头像框
     try:
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
         id_favorite = 1000 # 一个未知角色头像
     pic_dir = chara.fromid(id_favorite).icon.path
-    user_avatar = Image.open(pic_dir)
+    user_avatar = Image.open(pic_dir).convert("RGBA")
     user_avatar = user_avatar.resize((90, 90))
     im.paste(user_avatar, (44, 150), mask=user_avatar)
     im_frame = im_frame.resize((100, 100))
@@ -179,7 +179,7 @@ def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
     id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
     pic_dir = chara.fromid(id_friend_support).icon.path
-    avatar = Image.open(pic_dir)
+    avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
     im_frame = im_frame.resize((128, 128))
@@ -205,7 +205,7 @@ def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
     id_clan_support = int(str(clan_data['unit_data']['id'])[0:4])
     pic_dir = chara.fromid(id_clan_support).icon.path
-    avatar = Image.open(pic_dir)
+    avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
     im_frame = im_frame.resize((128, 128))
