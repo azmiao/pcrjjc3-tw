@@ -193,7 +193,7 @@ async def on_query_arena(bot, ev):
             last_login_date = time.localtime(last_login_time)
             last_login_str = time.strftime('%Y-%m-%d %H:%M:%S',last_login_date)
             
-            await bot.finish(ev, 
+            await bot.send(ev, 
 f'''区服：{cx_name}
 昵称：{res['user_info']["user_name"]}
 jjc排名：{res['user_info']["arena_rank"]}
