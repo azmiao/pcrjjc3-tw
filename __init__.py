@@ -13,6 +13,8 @@ from .create_img import generate_info_pic, generate_support_pic, _get_cx_name
 from hoshino.util import pic2b64
 import time
 import requests
+import os
+import json
 
 sv_help = '''
 注意：数字3为服务器编号，支持1、2、3或4
@@ -29,6 +31,8 @@ sv_help = '''
 [详细查询 3 uid] 查询账号详细信息（绑定后无需输入3 uid）
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
+[查竞技场头像框] 查看自己设置的详细查询里的角色头像框
+[竞技场换头像框] 更换详细查询生成的头像框，默认彩色
 [清空竞技场订阅] 清空所有绑定的账号(仅限主人)
 '''.strip()
 
@@ -85,6 +89,16 @@ if exists(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
     client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'], acinfo_4cx['TW_SERVER_ID'], pinfo['proxy'])
 
 qlck = Lock()
+
+# 头像框设置文件不存在就创建文件，并且默认彩色
+current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+if not os.path.exists(current_dir):
+    data = {
+        "default_frame": "color.png",
+        "customize": {}
+    }
+    with open(current_dir, 'w', encoding='UTF-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
 async def query(cx:str, id: str):
     if cx == '1': client = client_1cx
@@ -215,10 +229,10 @@ async def on_query_arena_all(bot, ev):
                 await bot.finish(ev, f'查询出错，缺少该服的配置文件', at_sender=True)
                 return
             sv.logger.info('开始生成竞技场查询图片...') # 通过log显示信息
-            result_image = await generate_info_pic(res, cx)
+            result_image = await generate_info_pic(res, cx, uid)
             result_image = pic2b64(result_image) # 转base64发送，不用将图片存本地
             result_image = MessageSegment.image(result_image)
-            result_support = await generate_support_pic(res)
+            result_support = await generate_support_pic(res, uid)
             result_support = pic2b64(result_support) # 转base64发送，不用将图片存本地
             result_support = MessageSegment.image(result_support)
             sv.logger.info('竞技场查询图片已准备完毕！')
@@ -358,3 +372,42 @@ async def leave_notice(session: NoticeSession):
         if uid in binds:
             binds.pop(uid)
             save_binds()
+
+@sv.on_prefix('竞技场换头像框')
+async def change_frame(bot, ev):
+    user_id = ev.user_id
+    frame_tmp = ev.message.extract_plain_text()
+    path = os.path.join(os.path.dirname(__file__), 'img/frame/')
+    frame_list = os.listdir(path)
+    if not frame_list:
+        await bot.finish(ev, 'img/frame/路径下没有任何头像框，请联系维护组检查目录')
+    if frame_tmp not in frame_list:
+        msg = f'文件名输入错误，命令样例：\n竞技场换头像框 color.png\n目前可选文件有：\n' + '\n'.join(frame_list)
+        await bot.finish(ev, msg)
+    data = {str(user_id): frame_tmp}
+    current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+    with open(current_dir, 'r', encoding='UTF-8') as f:
+        f_data = json.load(f)
+    f_data['customize'] = data
+    with open(current_dir, 'w', encoding='UTF-8') as rf:
+        json.dump(f_data, rf, indent=4, ensure_ascii=False)
+    await bot.send(ev, f'已成功选择头像框:{frame_tmp}')
+    frame_path = os.path.join(os.path.dirname(__file__), f'img/frame/{frame_tmp}')
+    msg = MessageSegment.image(f'file:///{os.path.abspath(frame_path)}')
+    await bot.send(ev, msg)
+
+# see_a_see（
+@sv.on_fullmatch('查竞技场头像框')
+async def see_a_see_frame(bot, ev):
+    user_id = str(ev.user_id)
+    current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+    with open(current_dir, 'r', encoding='UTF-8') as f:
+        f_data = json.load(f)
+    id_list = list(f_data['customize'].keys())
+    if user_id not in id_list:
+        frame_tmp = f_data['default_frame']
+    else:
+        frame_tmp = f_data['customize'][user_id]
+    path = os.path.join(os.path.dirname(__file__), f'img/frame/{frame_tmp}')
+    msg = MessageSegment.image(f'file:///{os.path.abspath(path)}')
+    await bot.send(ev, msg)

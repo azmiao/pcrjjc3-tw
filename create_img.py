@@ -3,6 +3,8 @@ from ..priconne import chara
 import time
 from pathlib import Path
 import zhconv
+import os
+import json
 from hoshino.aiorequests import run_sync_func
 
 path = Path(__file__).parent # 获取文件所在目录的绝对路径
@@ -10,6 +12,17 @@ font_cn_path = str(path / 'fonts' / 'SourceHanSansCN-Medium.otf')  # Path是路�
 font_tw_path = str(path / 'fonts' / 'pcrtwfont.ttf')
 
 server_name = '美食殿堂伺服器' # 设置服务器名称
+
+def get_frame(user_id):
+    current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+    with open(current_dir, 'r', encoding='UTF-8') as f:
+        f_data = json.load(f)
+    id_list = list(f_data['customize'].keys())
+    if user_id not in id_list:
+        frame_tmp = f_data['default_frame']
+    else:
+        frame_tmp = f_data['customize'][user_id]
+    return frame_tmp
 
 def _TraditionalToSimplified(hant_str: str):
     '''
@@ -43,12 +56,13 @@ def _get_cx_name(cx):
         cx_name = '未知服务器'
         return cx_name
 
-def _generate_info_pic_internal(data, cx):
+def _generate_info_pic_internal(data, cx, uid):
     '''
     个人资料卡生成
     '''
+    frame_tmp = get_frame(uid)
     im = Image.open(path / 'img' / 'template.png') # 图片模板
-    im_frame = Image.open(path / 'img' / 'frame.png').convert("RGBA") # 头像框
+    im_frame = Image.open(path / 'img' / 'frame' / f'{frame_tmp}').convert("RGBA") # 头像框
     try:
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
@@ -223,12 +237,13 @@ def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
 
     return im
 
-def _generate_support_pic_internal(data):
+def _generate_support_pic_internal(data, uid):
     '''
     支援界面图片合成
     '''
+    frame_tmp = get_frame(uid)
     im = Image.open(path / 'img' / 'support.png') # 支援图片模板
-    im_frame = Image.open(path / 'img' / 'frame.png') # 头像框
+    im_frame = Image.open(path / 'img' / 'frame' / f'{frame_tmp}') # 头像框
 
     fnt = ImageFont.truetype(font=font_cn_path, size=30)
     rgb = ImageColor.getrgb('#4e4e4e')
