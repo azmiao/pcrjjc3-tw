@@ -203,8 +203,8 @@ pjjc排名：{res['user_info']["grand_arena_rank"]}
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
         except requests.exceptions.ProxyError:
             await bot.finish(ev, f'查询出错，连接代理失败，请再次尝试', at_sender=True)
-        except:
-            await bot.finish(ev, f'查询出错，请再次尝试', at_sender=True)
+        except Exception as e:
+            await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
 @sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena_all(bot, ev):
@@ -244,8 +244,8 @@ async def on_query_arena_all(bot, ev):
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
         except requests.exceptions.ProxyError:
             await bot.finish(ev, f'查询出错，连接代理失败，请再次尝试', at_sender=True)
-        except:
-            await bot.finish(ev, f'查询出错，请再次尝试', at_sender=True)
+        except Exception as e:
+            await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
 @sv.on_rex('(启用|停止)(公主)?竞技场订阅')
 async def change_arena_sub(bot, ev):
