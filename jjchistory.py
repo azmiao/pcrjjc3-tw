@@ -75,7 +75,7 @@ limit(select count(*) FROM JJCHistoryStorage WHERE UID = ? and ITEM = ?) offset 
                 msg = msg + jjc_msg
                 return msg
             else:
-                msg = f'竞技场绑定ID:{UID}\n{item_name}历史记录\n无记录'
+                msg = f'竞技场绑定ID: {UID}\n{item_name}历史记录\n无记录'
                 return msg
         except Exception as e:
             raise Exception('查找记录异常')
