@@ -373,7 +373,7 @@ async def leave_notice(session: NoticeSession):
             binds.pop(uid)
             save_binds()
 
-@sv.on_prefix('竞技场换头像框')
+@sv.on_prefix('竞技场换头像框', '更换竞技场头像框', '更换头像框')
 async def change_frame(bot, ev):
     user_id = ev.user_id
     frame_tmp = ev.message.extract_plain_text()
@@ -397,7 +397,7 @@ async def change_frame(bot, ev):
     await bot.send(ev, msg)
 
 # see_a_see（
-@sv.on_fullmatch('查竞技场头像框')
+@sv.on_fullmatch('查竞技场头像框', '查询竞技场头像框', '查询头像框')
 async def see_a_see_frame(bot, ev):
     user_id = str(ev.user_id)
     current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
