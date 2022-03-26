@@ -10,8 +10,6 @@ path = Path(__file__).parent # 获取文件所在目录的绝对路径
 font_cn_path = str(path / 'fonts' / 'SourceHanSansCN-Medium.otf')  # Path是路径对象，必须转为str之后ImageFont才能读取
 font_tw_path = str(path / 'fonts' / 'pcrtwfont.ttf')
 
-server_name = '美食殿堂伺服器' # 设置服务器名称
-
 def get_frame(user_id):
     current_dir = path / 'frame.json'
     with open(current_dir, 'r', encoding='UTF-8') as f:
