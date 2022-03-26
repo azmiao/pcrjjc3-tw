@@ -66,24 +66,17 @@ limit(select count(*) FROM JJCHistoryStorage WHERE UID = ? and ITEM = ?) offset 
             # print(result_list)
             # print(f"长度{len(result_list)}")
             if len(result_list) != 0:
-                msg = f'''竞技场绑定ID:{UID}
-{item_name}历史记录'''
-                jjc_msg = '''
-'''
+                msg = f'竞技场绑定ID:{UID}\n{item_name}历史记录\n'
                 for row in result_list:
                     if row[4] > row[5]:
-                        jjc_msg += f'''{row[2]}:{row[4]}->{row[5]},↑{row[4]-row[5]}
-'''
+                        jjc_msg = f'【{row[2]}】{row[4]}->{row[5]}, ↑{row[4]-row[5]}\n'
                     else:
-                        jjc_msg += f'''{row[2]}:{row[4]}->{row[5]},↓{row[5]-row[4]}
-'''
+                        jjc_msg = f'【{row[2]}】{row[4]}->{row[5]}, ↓{row[5]-row[4]}\n'
                 msg = msg + jjc_msg
                 return msg
             else:
-                msg = f'''竞技场绑定ID:{UID}
-{item_name}历史记录
-'''
-                return msg + '无记录'
+                msg = f'竞技场绑定ID:{UID}\n{item_name}历史记录\n无记录'
+                return msg
         except Exception as e:
             raise Exception('查找记录异常')
 

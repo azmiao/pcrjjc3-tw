@@ -226,12 +226,8 @@ async def send_arena_history(bot, ev):
         await bot.send(ev, '未绑定竞技场', at_sender=True)
     else:
         ID = binds[uid]['id']
-        msg = JJCH._select(ID, 1)
-        qq_msg = f'''QQ:{uid}
-'''
-        msg = qq_msg + msg
+        msg = f'QQ: {uid}\n{JJCH._select(ID, 1)}'
         await bot.finish(ev, msg, at_sender=True)
-
 
 @sv.on_prefix('公主竞技场历史')
 async def send_parena_history(bot, ev):
@@ -241,10 +237,7 @@ async def send_parena_history(bot, ev):
         await bot.send(ev, '未绑定竞技场', at_sender=True)
     else:
         ID = binds[uid]['id']
-        msg = JJCH._select(ID, 0)
-        qq_msg = f'''QQ:{uid}
-'''
-        msg = qq_msg + msg
+        msg = f'QQ: {uid}\n{JJCH._select(ID, 0)}'
         await bot.finish(ev, msg, at_sender=True)
 
 @sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
