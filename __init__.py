@@ -15,6 +15,7 @@ import time
 import requests
 import os
 import json
+from .jjchistory import *
 
 sv_help = '''
 注意：数字3为服务器编号，支持1、2、3或4
@@ -26,6 +27,8 @@ sv_help = '''
 [停止公主竞技场订阅] 停止公主竞技场排名变动推送
 [启用竞技场订阅] 启用战斗竞技场排名变动推送
 [启用公主竞技场订阅] 启用公主竞技场排名变动推送
+[竞技场历史] 查询战斗竞技场变化记录（战斗竞技场订阅开启有效，可保留10条）
+[公主竞技场历史] 查询公主竞技场变化记录（公主竞技场订阅开启有效，可保留10条）
 [删除竞技场订阅] 删除竞技场排名变动推送绑定
 [竞技场订阅状态] 查看排名变动推送绑定状态
 [详细查询 3 uid] 查询账号详细信息（绑定后无需输入3 uid）
@@ -74,6 +77,9 @@ captcha_lck = Lock()
 
 with open(join(curpath, 'account.json')) as fp:
     pinfo = load(fp)
+
+# 数据库对象初始化
+JJCH = JJCHistoryStorage()
 
 if exists(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
     acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
@@ -136,6 +142,9 @@ async def pcrjjc_del(bot, ev):
             return
         else:
             num = len(binds)
+            bind_cache = deepcopy(binds)
+            for uid in bind_cache:
+                JJCH._remove(binds[uid]['id'])
             binds.clear()
             save_binds()
             await bot.send(ev, f'已清空全部【{num}】个已订阅账号！')
@@ -206,6 +215,38 @@ pjjc排名：{res['user_info']["grand_arena_rank"]}
         except Exception as e:
             await bot.finish(ev, f'查询出错，{e}', at_sender=True)
 
+@sv.on_prefix('竞技场历史')
+async def send_arena_history(bot, ev):
+    '''
+    竞技场历史记录
+    '''
+    global binds, lck
+    uid = str(ev['user_id'])
+    if uid not in binds:
+        await bot.send(ev, '未绑定竞技场', at_sender=True)
+    else:
+        ID = binds[uid]['id']
+        msg = JJCH._select(ID, 1)
+        qq_msg = f'''QQ:{uid}
+'''
+        msg = qq_msg + msg
+        await bot.finish(ev, msg, at_sender=True)
+
+
+@sv.on_prefix('公主竞技场历史')
+async def send_parena_history(bot, ev):
+    global binds, lck
+    uid = str(ev['user_id'])
+    if uid not in binds:
+        await bot.send(ev, '未绑定竞技场', at_sender=True)
+    else:
+        ID = binds[uid]['id']
+        msg = JJCH._select(ID, 0)
+        qq_msg = f'''QQ:{uid}
+'''
+        msg = qq_msg + msg
+        await bot.finish(ev, msg, at_sender=True)
+
 @sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena_all(bot, ev):
     global binds, lck
@@ -270,6 +311,15 @@ async def validate(session):
         validate = session.ctx['message'].extract_plain_text().strip()[8:]
         captcha_lck.release()
 
+async def delete_arena(uid):
+    '''
+    订阅删除方法
+    '''
+    async with lck:
+        JJCH._remove(binds[uid]['id'])
+        binds.pop(uid)
+        save_binds()
+
 @sv.on_prefix('删除竞技场订阅')
 async def delete_arena_sub(bot,ev):
     global binds, lck
@@ -290,8 +340,7 @@ async def delete_arena_sub(bot,ev):
         return
 
     async with lck:
-        binds.pop(uid)
-        save_binds()
+        await delete_arena(uid)
 
     await bot.finish(ev, '删除竞技场订阅成功', at_sender=True)
 
@@ -323,8 +372,8 @@ async def on_arena_schedule():
         bind_cache = deepcopy(binds)
 
 
-    for user in bind_cache:
-        info = bind_cache[user]
+    for uid in bind_cache:
+        info = bind_cache[uid]
         try:
             sv.logger.info(f'querying server[ {info["cx"]} ]: {info["id"]} for {info["uid"]}')
             res = await query(info["cx"], info['id'])
@@ -334,12 +383,22 @@ async def on_arena_schedule():
                 return
             res = (res['user_info']['arena_rank'], res['user_info']['grand_arena_rank'])
 
-            if user not in cache:
-                cache[user] = res
+            if uid not in cache:
+                cache[uid] = res
                 continue
 
-            last = cache[user]
-            cache[user] = res
+            last = cache[uid]
+            cache[uid] = res
+
+            # 两次间隔排名变化且开启了相关订阅就记录到数据库
+            if res[0] != last[0] and info['arena_on']:
+                JJCH._add(int(info["id"]), 1, last[0], res[0])
+                JJCH._refresh(int(info["id"]), 1)
+                sv.logger.info(f"{info['id']}: JJC {last[0]}->{res[0]}")
+            if res[1] != last[1] and info['grand_arena_on']:
+                JJCH._add(int(info["id"]), 0, last[1], res[1])
+                JJCH._refresh(int(info["id"]), 0)
+                sv.logger.info(f"{info['id']}: PJJC {last[1]}->{res[1]}")
 
             if res[0] > last[0] and info['arena_on']:
                 await bot.send_group_msg(
@@ -357,8 +416,7 @@ async def on_arena_schedule():
             if e.code == 6:
 
                 async with lck:
-                    binds.pop(user)
-                    save_binds()
+                    await delete_arena(uid)
                 sv.logger.info(f'已经自动删除错误的uid={info["id"]}')
         except:
             sv.logger.info(f'对台服{info["cx"]}服的{info["id"]}的检查出错\n{format_exc()}')
@@ -370,8 +428,7 @@ async def leave_notice(session: NoticeSession):
     
     async with lck:
         if uid in binds:
-            binds.pop(uid)
-            save_binds()
+            await delete_arena(uid)
 
 @sv.on_prefix('竞技场换头像框', '更换竞技场头像框', '更换头像框')
 async def change_frame(bot, ev):
