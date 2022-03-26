@@ -58,7 +58,7 @@ def _generate_info_pic_internal(data, cx, uid):
     个人资料卡生成
     '''
     frame_tmp = get_frame(uid)
-    im = Image.open(path / 'img' / 'template.png') # 图片模板
+    im = Image.open(path / 'img' / 'template.png').convert("RGBA") # 图片模板
     im_frame = Image.open(path / 'img' / 'frame' / f'{frame_tmp}').convert("RGBA") # 头像框
     try:
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
@@ -187,7 +187,7 @@ def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     好友支援位
     '''
     # 合成头像
-    im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
+    im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
     pic_dir = chara.fromid(id_friend_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
@@ -213,7 +213,7 @@ def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     地下城及战队支援位
     '''
     # 合成头像
-    im_yuansu = Image.open(path / 'img' / 'yuansu.png') # 一个支援ui模板
+    im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_clan_support = int(str(clan_data['unit_data']['id'])[0:4])
     pic_dir = chara.fromid(id_clan_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
@@ -239,8 +239,8 @@ def _generate_support_pic_internal(data, uid):
     支援界面图片合成
     '''
     frame_tmp = get_frame(uid)
-    im = Image.open(path / 'img' / 'support.png') # 支援图片模板
-    im_frame = Image.open(path / 'img' / 'frame' / f'{frame_tmp}') # 头像框
+    im = Image.open(path / 'img' / 'support.png').convert("RGBA") # 支援图片模板
+    im_frame = Image.open(path / 'img' / 'frame' / f'{frame_tmp}').convert("RGBA") # 头像框
 
     fnt = ImageFont.truetype(font=font_cn_path, size=30)
     rgb = ImageColor.getrgb('#4e4e4e')
