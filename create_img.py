@@ -3,7 +3,6 @@ from ..priconne import chara
 import time
 from pathlib import Path
 import zhconv
-import os
 import json
 from hoshino.aiorequests import run_sync_func
 
@@ -14,7 +13,7 @@ font_tw_path = str(path / 'fonts' / 'pcrtwfont.ttf')
 server_name = '美食殿堂伺服器' # 设置服务器名称
 
 def get_frame(user_id):
-    current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+    current_dir = path / 'frame.json'
     with open(current_dir, 'r', encoding='UTF-8') as f:
         f_data = json.load(f)
     id_list = list(f_data['customize'].keys())
