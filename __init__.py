@@ -2,7 +2,7 @@ from json import load, dump
 from nonebot import get_bot
 from hoshino import priv
 from hoshino.typing import NoticeSession, MessageSegment
-from .pcrclient import pcrclient, ApiException
+from .pcrclient import pcrclient, ApiException, get_headers
 from asyncio import Lock
 from os.path import dirname, join, exists
 from copy import deepcopy
@@ -39,6 +39,24 @@ sv_help = '''
 [清空竞技场订阅] 清空所有绑定的账号(仅限主人)
 '''.strip()
 
+# 启动时的两个文件，不存在就创建
+# headers文件
+header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
+if not os.path.exists(header_path):
+    default_headers = get_headers()
+    with open(header_path, 'w', encoding='UTF-8') as f:
+        json.dump(default_headers, f, indent=4, ensure_ascii=False)
+
+# 头像框设置文件，默认彩色
+current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
+if not os.path.exists(current_dir):
+    data = {
+        "default_frame": "color.png",
+        "customize": {}
+    }
+    with open(current_dir, 'w', encoding='UTF-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
 sv = SafeService('竞技场推送_tw', help_=sv_help, bundle='pcr查询')
 
 @sv.on_fullmatch('竞技场帮助', only_to_me=False)
@@ -53,60 +71,59 @@ async def group_num(bot, ev):
         msg = f"本Bot目前正在为【{len(gl)}】个群服务"
     await bot.send(ev, f'{msg}')
 
+# 读取绑定配置
 curpath = dirname(__file__)
 config = join(curpath, 'binds.json')
 root = {
     'arena_bind' : {}
 }
-
-cache = {}
-client = None
-client_1cx = None
-client_2cx = None
-client_3cx = None
-client_4cx = None
-lck = Lock()
-
 if exists(config):
     with open(config) as fp:
         root = load(fp)
-
 binds = root['arena_bind']
 
-captcha_lck = Lock()
-
+# 读取代理配置
 with open(join(curpath, 'account.json')) as fp:
     pinfo = load(fp)
+
+# 一些变量初始化
+cache = {}
+client = None
+
+# 设置异步锁保证线程安全
+lck = Lock()
+captcha_lck = Lock()
+qlck = Lock()
 
 # 数据库对象初始化
 JJCH = JJCHistoryStorage()
 
-if exists(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-    acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-    client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID'], acinfo_1cx['VIEWER_ID'], acinfo_1cx['TW_SERVER_ID'], pinfo['proxy'])
-if exists(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-    acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-    client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID'], acinfo_2cx['VIEWER_ID'], acinfo_2cx['TW_SERVER_ID'], pinfo['proxy'])
-if exists(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-    acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-    client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID'], acinfo_3cx['VIEWER_ID'], acinfo_3cx['TW_SERVER_ID'], pinfo['proxy'])
-if exists(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-    acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-    client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'], acinfo_4cx['TW_SERVER_ID'], pinfo['proxy'])
-
-qlck = Lock()
-
-# 头像框设置文件不存在就创建文件，并且默认彩色
-current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
-if not os.path.exists(current_dir):
-    data = {
-        "default_frame": "color.png",
-        "customize": {}
-    }
-    with open(current_dir, 'w', encoding='UTF-8') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
+# 获取配置文件
+def get_client():
+    client_1cx = None
+    client_2cx = None
+    client_3cx = None
+    client_4cx = None
+    acinfo_1cx = {'admin': ''}
+    acinfo_2cx = {'admin': ''}
+    acinfo_3cx = {'admin': ''}
+    acinfo_4cx = {'admin': ''}
+    if exists(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
+        acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
+        client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID'], acinfo_1cx['VIEWER_ID'], acinfo_1cx['TW_SERVER_ID'], pinfo['proxy'])
+    if exists(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
+        acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
+        client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID'], acinfo_2cx['VIEWER_ID'], acinfo_2cx['TW_SERVER_ID'], pinfo['proxy'])
+    if exists(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
+        acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
+        client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID'], acinfo_3cx['VIEWER_ID'], acinfo_3cx['TW_SERVER_ID'], pinfo['proxy'])
+    if exists(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
+        acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
+        client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'], acinfo_4cx['TW_SERVER_ID'], pinfo['proxy'])
+    return client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx
 
 async def query(cx:str, id: str):
+    client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx = get_client()
     if cx == '1': client = client_1cx
     elif cx == '2': client = client_2cx
     elif cx == '3': client = client_3cx
@@ -299,6 +316,7 @@ async def change_arena_sub(bot, ev):
 # @on_command('/pcrval')
 async def validate(session):
     global binds, lck, validate
+    client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx = get_client()
     if session.ctx['user_id'] == acinfo_1cx['admin'] or session.ctx['user_id'] == acinfo_2cx['admin'] \
         or session.ctx['user_id'] == acinfo_3cx['admin'] or session.ctx['user_id'] == acinfo_4cx['admin']:
         validate = session.ctx['message'].extract_plain_text().strip()[8:]
@@ -461,3 +479,13 @@ async def see_a_see_frame(bot, ev):
     path = os.path.join(os.path.dirname(__file__), f'img/frame/{frame_tmp}')
     msg = MessageSegment.image(f'file:///{os.path.abspath(path)}')
     await bot.send(ev, msg)
+
+# 由于apkimage网站的pcr_tw大概每次都是10点多更新的
+# 因此这里每天12点左右自动更新版本号
+@sv.scheduled_job('cron', hour='11', minute='56')
+async def update_ver():
+    header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
+    default_headers = get_headers()
+    with open(header_path, 'w', encoding='UTF-8') as f:
+        json.dump(default_headers, f, indent=4, ensure_ascii=False)
+    sv.logger.info(f'pcr-jjc3-tw的游戏版本已更新至最新')

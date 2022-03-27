@@ -22,9 +22,11 @@
     ```
     来禁止该warning显示
 
-3. 本插件现已支持自定义头像框，默认为彩色头像框（为[前川未来佬](https://github.com/shirakami-fubuki)从不知道什么鬼鬼地方使劲抠出来的彩框2333），其余rank框均为游戏解包抠出来的原图。
+3. 本插件现已支持每个群友自定义头像框，默认为彩色头像框（为[前川未来佬](https://github.com/shirakami-fubuki)从不知道什么鬼鬼地方使劲抠出来的彩框2333），其余rank框均为游戏解包抠出来的原图。
 
-    如果你需要自己添加其他头像框也是没问题滴，直接把图片扔进本目录下的/img/frame/文件夹里即可，并且不用重启hoshinobot即可，大多数常见的图片格式一般都行，大概（
+    如果你需要自己添加其他头像框也是没问题滴，直接把图片扔进本目录下的/img/frame/文件夹里即可，并且不用重启hoshinobot即可，大多数常见的图片格式一般都行，会自动转RGBA所以一般来说不用担心
+
+4. 本插件现已支持自动更新版本号，妈妈再也不用担心我每次游戏版本更新时，都得手动改插件的版本号再重启hoshinobot了
 
 ## 命令
 
@@ -50,16 +52,6 @@
 | 查询头像框         | 查看自己设置的详细查询里的角色头像框                     |
 | 更换头像框         | 更换详细查询生成的头像框，默认彩色                       |
 | 清空竞技场订阅     | 清空所有绑定的账号(仅限主人)                             |
-
-## 支持版本
-
-目前支持游戏版本：3.1.0
-
-和之前的pcrjjc2一样，若后续游戏版本更新请自己打开`pcrclient.py`文件第18行
-```
-    'APP-VER' : '3.1.0',
-```
-修改游戏版本为当前最新，然后重启hoshinobot即可
 
 ## 配置方法
 
@@ -92,18 +84,21 @@
 5. 开启插件，并重启Hoshino即可食用
 
 ## 更新日志
+
+2022-03-27：新增自动更新插件内设置的游戏版本号
+
 2022-03-27：新增竞技场历史记录查询
 
 2022-03-24：新增自定义更换详细查询的头像框
 
 2022-02-21：[详细查询整合为两张精美图片](https://github.com/azmiao/pcrjjc3-tw/pull/9)：新增个人资料卡界面图片生成与支援角色卡界面图片生成，并整合进详细查询中。
 
+<details>
+<summary>更以前的更新日志</summary>
+
 2022-02-19：[优化并简化触发命令结构，可支持空格](https://github.com/azmiao/pcrjjc3-tw/commit/bc8413d944cdf4c17be62532494470878c9c9072)
 
 2022-02-18：[更新README，并整合支援头像为一张图，](https://github.com/azmiao/pcrjjc3-tw/commit/98157067f590bb351c868c71bba3848b79afe80e)[close](https://github.com/azmiao/pcrjjc3-tw/commit/98157067f590bb351c868c71bba3848b79afe80e) [#7](https://github.com/azmiao/pcrjjc3-tw/issues/7)，[为了让时空祈梨能够完整显示日文名，调整了下位置，字体大小自适应以后再写吧2333](https://github.com/azmiao/pcrjjc3-tw/commit/3db3f161d835114247f12bc51ae2cdb08549be8c)
-
-<details>
-<summary>更以前的更新日志</summary>
 
 2022-02-16：[更详细的详细查询，支持查询支援角色](https://github.com/azmiao/pcrjjc3-tw/commit/c0eb4d969a5212db51c422b8155c94bbb0a6a823)，[查询信息中新增获取账号所在区服](https://github.com/azmiao/pcrjjc3-tw/commit/5f1e3d4a13f5b35bb7838221d1114a366f420ee9)，[修复KeyError: 'favorite_unit'报错](https://github.com/azmiao/pcrjjc3-tw/commit/d903a06c03f6d1aaf37ddf5ffcc7afad8157eaa3) 
 
@@ -116,6 +111,6 @@
 
 ![FQ~} OTM$L20L6DAEI~RN`K](https://user-images.githubusercontent.com/71607036/154960912-6fd4f1fb-df38-4ef6-997c-af01b71810f4.PNG)
 
-## 03-24 添加的自定义头像框后我的截图
+## 03-24 添加的自定义头像框后我的彩框截图
 
 ![寄！](https://cdn.jsdelivr.net/gh/azmiao/picture-bed/img/寄汤来咯.png)
