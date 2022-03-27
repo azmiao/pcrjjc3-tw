@@ -2,6 +2,8 @@
 
 本插件是[pcrjjc2](https://github.com/cc004/pcrjjc2/tree/tw)的修改版
 
+### 当然，pcrjjc3也有不带竞技场排名推送的版本，在[Lite分支](https://github.com/azmiao/pcrjjc3-tw/tree/lite)下
+
 ## 如何更新
 
 一直摸兜里，直接`git pull`就完事了
