@@ -322,14 +322,13 @@ async def validate(session):
         validate = session.ctx['message'].extract_plain_text().strip()[8:]
         captcha_lck.release()
 
-async def delete_arena(uid):
+def delete_arena(uid):
     '''
     订阅删除方法
     '''
-    async with lck:
-        JJCH._remove(binds[uid]['id'])
-        binds.pop(uid)
-        save_binds()
+    JJCH._remove(binds[uid]['id'])
+    binds.pop(uid)
+    save_binds()
 
 @sv.on_prefix('删除竞技场订阅')
 async def delete_arena_sub(bot,ev):
@@ -351,7 +350,7 @@ async def delete_arena_sub(bot,ev):
         return
 
     async with lck:
-        await delete_arena(uid)
+        delete_arena(uid)
 
     await bot.finish(ev, '删除竞技场订阅成功', at_sender=True)
 
@@ -427,7 +426,7 @@ async def on_arena_schedule():
             if e.code == 6:
 
                 async with lck:
-                    await delete_arena(uid)
+                    delete_arena(uid)
                 sv.logger.info(f'已经自动删除错误的uid={info["id"]}')
         except:
             sv.logger.info(f'对台服{info["cx"]}服的{info["id"]}的检查出错\n{format_exc()}')
@@ -436,10 +435,18 @@ async def on_arena_schedule():
 async def leave_notice(session: NoticeSession):
     global lck, binds
     uid = str(session.ctx['user_id'])
+    bot = get_bot()
     
     async with lck:
+        bind_cache = deepcopy(binds)
         if uid in binds:
-            await delete_arena(uid)
+            info = bind_cache[uid]
+            delete_arena(uid)
+            await bot.send_group_msg(
+                group_id = int(info['gid']),
+                message = f'{uid}退群了，已自动删除其竞技场订阅推送'
+            )
+        
 
 @sv.on_prefix('竞技场换头像框', '更换竞技场头像框', '更换头像框')
 async def change_frame(bot, ev):
