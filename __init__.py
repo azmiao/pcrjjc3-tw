@@ -41,11 +41,12 @@ sv_help = '''
 
 # 启动时的两个文件，不存在就创建
 # headers文件
-header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
-if not os.path.exists(header_path):
-    default_headers = get_headers()
-    with open(header_path, 'w', encoding='UTF-8') as f:
-        json.dump(default_headers, f, indent=4, ensure_ascii=False)
+async def get_headerss():
+    header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
+    if not os.path.exists(header_path):
+        default_headers = await get_headers()
+        with open(header_path, 'w', encoding='UTF-8') as f:
+            json.dump(default_headers, f, indent=4, ensure_ascii=False)
 
 # 头像框设置文件，默认彩色
 current_dir = os.path.join(os.path.dirname(__file__), 'frame.json')
@@ -492,7 +493,7 @@ async def see_a_see_frame(bot, ev):
 @sv.scheduled_job('cron', hour='11', minute='56')
 async def update_ver():
     header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
-    default_headers = get_headers()
+    default_headers = await get_headers()
     with open(header_path, 'w', encoding='UTF-8') as f:
         json.dump(default_headers, f, indent=4, ensure_ascii=False)
     sv.logger.info(f'pcr-jjc3-tw的游戏版本已更新至最新')

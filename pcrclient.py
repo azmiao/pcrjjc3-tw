@@ -6,7 +6,7 @@ from Crypto.Util.Padding import unpad, pad
 from base64 import b64encode, b64decode
 from random import choice
 from bs4 import BeautifulSoup
-import requests
+from hoshino import aiorequests
 import re
 import os
 import json
@@ -14,8 +14,8 @@ import json
 from hoshino.aiorequests import post
 
 # 获取headers
-def get_headers():
-    app_ver = get_ver()
+async def get_headers():
+    app_ver = await get_ver()
     default_headers = {
         'Accept-Encoding' : 'gzip',
         'User-Agent' : 'Dalvik/2.1.0 (Linux, U, Android 5.1.1, PCRT00 Build/LMY48Z)',
@@ -39,9 +39,9 @@ def get_headers():
     return default_headers
 
 # 获取版本号
-def get_ver():
+async def get_ver():
     app_url = 'https://apkimage.io/?q=tw.sonet.princessconnect'
-    app_res = requests.get(app_url, timeout=15)
+    app_res = await aiorequests.get(app_url, timeout=15)
     soup = BeautifulSoup(app_res.text, 'lxml')
     ver_tmp = soup.find('span', text = re.compile(r'Version：(\d\.\d\.\d)'))
     app_ver = ver_tmp.text.replace('Version：', '')
