@@ -314,9 +314,11 @@ async def send_arena_sub_status(bot,ev):
 async def leave_notice(session: NoticeSession):
     global lck, binds
     uid = str(session.ctx['user_id'])
-    
+    gid = str(session.ctx['group_id'])
     async with lck:
-        if uid in binds:
+        bind_cache = deepcopy(binds)
+        info = bind_cache[uid]
+        if uid in binds and info['gid'] == gid:
             binds.pop(uid)
             save_binds()
 
