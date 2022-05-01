@@ -189,7 +189,7 @@ async def on_arena_bind(bot, ev):
         save_binds()
         is_file = judge_file(cx)
         msg = '竞技场绑定成功'
-        msg += f'\n注：本bot未识别到台服{cx}服配置文件，因此查询该服的玩家信息功能不可用，请联系维护组解决' if is_file else ''
+        msg += f'\n注：本bot未识别到台服{cx}服配置文件，因此查询该服的玩家信息功能不可用，请联系维护组解决' if not is_file else ''
 
     await bot.finish(ev, msg, at_sender=True)
 
