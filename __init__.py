@@ -88,32 +88,32 @@ lck = Lock()
 captcha_lck = Lock()
 qlck = Lock()
 
+# 查询配置文件是否存在
+def judge_file(cx):
+    cx_path = os.path.join(os.path.dirname(__file__), f'{cx}cx_tw.sonet.princessconnect.v2.playerprefs.xml')
+    if os.path.exists(cx_path):
+        return True
+    else:
+        return False
+
 # 获取配置文件
 def get_client():
-    client_1cx = None
-    client_2cx = None
-    client_3cx = None
-    client_4cx = None
-    acinfo_1cx = {'admin': ''}
-    acinfo_2cx = {'admin': ''}
-    acinfo_3cx = {'admin': ''}
-    acinfo_4cx = {'admin': ''}
-    if exists(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-        acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-        client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID'], acinfo_1cx['VIEWER_ID'], acinfo_1cx['TW_SERVER_ID'], pinfo['proxy'])
-    if exists(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-        acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-        client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID'], acinfo_2cx['VIEWER_ID'], acinfo_2cx['TW_SERVER_ID'], pinfo['proxy'])
-    if exists(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-        acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-        client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID'], acinfo_3cx['VIEWER_ID'], acinfo_3cx['TW_SERVER_ID'], pinfo['proxy'])
-    if exists(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')):
-        acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
-        client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'], acinfo_4cx['TW_SERVER_ID'], pinfo['proxy'])
+    acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(1) else {'admin': ''}
+    client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID'], acinfo_1cx['VIEWER_ID'],
+        acinfo_1cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(1) else None
+    acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(2) else {'admin': ''}
+    client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID'], acinfo_2cx['VIEWER_ID'],
+        acinfo_2cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(2) else None
+    acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(3) else {'admin': ''}
+    client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID'], acinfo_3cx['VIEWER_ID'],
+        acinfo_3cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(3) else None
+    acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(4) else {'admin': ''}
+    client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'],
+        acinfo_4cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(4) else None
     return client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx
 
 async def query(cx:str, id: str):
-    client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx = get_client()
+    client_1cx, client_2cx, client_3cx, client_4cx, _, _, _, _ = get_client()
     if cx == '1': client = client_1cx
     elif cx == '2': client = client_2cx
     elif cx == '3': client = client_3cx
@@ -164,9 +164,9 @@ async def on_arena_bind(bot, ev):
     async with lck:
         uid = str(ev['user_id'])
         last = binds[uid] if uid in binds else None
-
+        cx = ev['match'].group(1)
         binds[uid] = {
-            'cx': ev['match'].group(1),
+            'cx': cx,
             'id': ev['match'].group(2),
             'uid': uid,
             'gid': str(ev['group_id']),
@@ -174,8 +174,11 @@ async def on_arena_bind(bot, ev):
             'grand_arena_on': last is None or last['grand_arena_on'],
         }
         save_binds()
+        is_file = judge_file(cx)
+        msg = '竞技场绑定成功'
+        msg += f'\n注：本bot未识别到台服{cx}服配置文件，因此查询该服的玩家信息功能不可用，请联系维护组解决' if not is_file else ''
 
-    await bot.finish(ev, '竞技场绑定成功', at_sender=True)
+    await bot.finish(ev, msg, at_sender=True)
 
 @sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena(bot, ev):
@@ -263,7 +266,7 @@ async def on_query_arena_all(bot, ev):
 # @on_command('/pcrval')
 async def validate(session):
     global binds, lck, validate
-    client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx = get_client()
+    _, _, _, _, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx = get_client()
     if session.ctx['user_id'] == acinfo_1cx['admin'] or session.ctx['user_id'] == acinfo_2cx['admin'] \
         or session.ctx['user_id'] == acinfo_3cx['admin'] or session.ctx['user_id'] == acinfo_4cx['admin']:
         validate = session.ctx['message'].extract_plain_text().strip()[8:]
@@ -314,11 +317,20 @@ async def send_arena_sub_status(bot,ev):
 async def leave_notice(session: NoticeSession):
     global lck, binds
     uid = str(session.ctx['user_id'])
-    
+    gid = str(session.ctx['group_id'])
+    bot = get_bot()
+    if uid not in binds:
+        return
     async with lck:
-        if uid in binds:
+        bind_cache = deepcopy(binds)
+        info = bind_cache[uid]
+        if info['gid'] == gid:
             binds.pop(uid)
             save_binds()
+            await bot.send_group_msg(
+                group_id = int(info['gid']),
+                message = f'{uid}退群了，已自动删除其绑定在本群的竞技场订阅推送'
+            )
 
 @sv.on_prefix(('竞技场换头像框', '更换竞技场头像框', '更换头像框'))
 async def change_frame(bot, ev):
