@@ -35,7 +35,7 @@
    ```
    pip uninstall msgpack_python
    pip uninstall msgpack
-   pip install msgpack>=1.0.2
+   pip install msgpack~=1.0.2
    ```
 
 ## 命令
