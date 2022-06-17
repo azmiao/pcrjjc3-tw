@@ -30,6 +30,14 @@
 
 4. 本插件现已支持自动更新版本号，妈妈再也不用担心我每次游戏版本更新时，都得手动改插件的版本号再重启hoshinobot了
 
+5. 若运行过程中出现`TypeError: __init__() got an unexpected keyword argument 'strict_map_key'`报错，为依赖问题，请在终端中进行如下操作，一行一行依次复制执行，过程中提示是否卸载，选择Y：
+
+   ```
+   pip uninstall msgpack_python
+   pip uninstall msgpack
+   pip install msgpack>=1.0.2
+   ```
+
 ## 命令
 
 注意：数字3为服务器编号，支持1、2、3或4
@@ -78,7 +86,7 @@
     ```
     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
     ```
-
+    
 4. 配置account.json设置代理：localhost就行，只要改端口，自行更换和你代理软件代理的端口一样就行，是代理端口哦，不是软件监听端口，开PAC模式不改变系统代理就行
 
     注意：如果你不需要代理，请打开`account.json`并将里面改成`{"proxy":{}}`
