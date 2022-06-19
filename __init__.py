@@ -229,10 +229,10 @@ async def on_query_arena_all(bot, ev):
     robj = ev['match']
     cx = robj.group(1)
     id = robj.group(2)
+    uid = str(ev['user_id'])
 
     async with lck:
         if id == None and cx == None:
-            uid = str(ev['user_id'])
             if not uid in binds:
                 await bot.finish(ev, '您还未绑定竞技场', at_sender=True)
                 return
