@@ -514,9 +514,9 @@ async def see_a_see_frame(bot, ev):
     msg = MessageSegment.image(f'file:///{os.path.abspath(path)}')
     await bot.send(ev, msg)
 
-# 由于apkimage网站的pcr_tw大概每次都是12点左右更新的
-# 因此这里每天13点左右自动更新版本号
-@sv.scheduled_job('cron', hour='13', minute='1')
+# 由于apkimage网站的pcr_tw大概每次都是0点左右更新的
+# 因此这里每天2点左右自动更新版本号
+@sv.scheduled_job('cron', hour='2', minute='1')
 async def update_ver():
     header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
     default_headers = get_headers()
