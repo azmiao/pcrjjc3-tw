@@ -1,6 +1,6 @@
 from json import load, dump
 from nonebot import get_bot
-from hoshino import priv
+from hoshino import priv, util
 from hoshino.typing import NoticeSession, MessageSegment
 from .pcrclient import pcrclient, ApiException, get_headers
 from asyncio import Lock
@@ -236,7 +236,7 @@ async def on_query_arena(bot, ev):
             
             await bot.send(ev, 
 f'''区服：{cx_name}
-昵称：{res['user_info']["user_name"]}
+昵称：{util.filt_message(str(res['user_info']["user_name"]))}
 jjc排名：{res['user_info']["arena_rank"]}
 pjjc排名：{res['user_info']["grand_arena_rank"]}
 最后登录：{last_login_str}''', at_sender=False)
