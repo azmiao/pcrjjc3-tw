@@ -7,11 +7,14 @@ from base64 import b64encode, b64decode
 from random import choice
 from bs4 import BeautifulSoup
 import requests
-import re
 import os
 import json
 
 from hoshino.aiorequests import post
+
+# 读取代理配置
+with open(os.path.join(os.path.dirname(__file__), 'account.json')) as fp:
+    pinfo = json.load(fp)
 
 # 获取headers
 def get_headers():
@@ -40,11 +43,11 @@ def get_headers():
 
 # 获取版本号
 def get_ver():
-    app_url = 'https://apkimage.io/?q=tw.sonet.princessconnect'
-    app_res = requests.get(app_url, timeout=15)
+    app_url = 'https://sameapk.com/超異域公主連結！redive/'
+    app_res = requests.get(app_url, timeout=15, proxies=pinfo['proxy'])
     soup = BeautifulSoup(app_res.text, 'lxml')
-    ver_tmp = soup.find('span', text = re.compile(r'Version：(\d\.\d\.\d)'))
-    app_ver = ver_tmp.text.replace('Version：', '')
+    ver_tmp = soup.find('td', {"itemprop": "version"})
+    app_ver = ver_tmp.text.strip()
     return str(app_ver)
 
 class ApiException(Exception):
