@@ -6,6 +6,7 @@ import zhconv
 import json
 from hoshino.aiorequests import run_sync_func
 from hoshino import util
+import asyncio
 
 path = Path(__file__).parent # 获取文件所在目录的绝对路径
 font_cn_path = str(path / 'fonts' / 'SourceHanSansCN-Medium.otf')  # Path是路径对象，必须转为str之后ImageFont才能读取
@@ -65,7 +66,7 @@ def _generate_info_pic_internal(data, cx, uid):
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
         id_favorite = 1000 # 一个未知角色头像
-    pic_dir = chara.fromid(id_favorite).icon.path
+    pic_dir = asyncio.run(chara.fromid(id_favorite).get_icon()).path
     user_avatar = Image.open(pic_dir).convert("RGBA")
     user_avatar = user_avatar.resize((90, 90))
     im.paste(user_avatar, (44, 150), mask=user_avatar)
@@ -195,7 +196,7 @@ def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
-    pic_dir = chara.fromid(id_friend_support).icon.path
+    pic_dir = asyncio.run(chara.fromid(id_friend_support).get_icon()).path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
@@ -221,7 +222,7 @@ def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_clan_support = int(str(clan_data['unit_data']['id'])[0:4])
-    pic_dir = chara.fromid(id_clan_support).icon.path
+    pic_dir = asyncio.run(chara.fromid(id_clan_support).get_icon()).path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
