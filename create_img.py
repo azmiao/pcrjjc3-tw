@@ -6,7 +6,6 @@ import zhconv
 import json
 from hoshino.aiorequests import run_sync_func
 from hoshino import util
-import asyncio
 
 path = Path(__file__).parent # 获取文件所在目录的绝对路径
 font_cn_path = str(path / 'fonts' / 'SourceHanSansCN-Medium.otf')  # Path是路径对象，必须转为str之后ImageFont才能读取
@@ -55,7 +54,7 @@ def _get_cx_name(cx):
         cx_name = '未知服务器'
         return cx_name
 
-def _generate_info_pic_internal(data, cx, uid):
+async def generate_info_pic(data, cx, uid):
     '''
     个人资料卡生成
     '''
@@ -66,7 +65,11 @@ def _generate_info_pic_internal(data, cx, uid):
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
         id_favorite = 1000 # 一个未知角色头像
-    pic_dir = asyncio.run(chara.fromid(id_favorite).get_icon()).path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_favorite).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_favorite).icon.path
     user_avatar = Image.open(pic_dir).convert("RGBA")
     user_avatar = user_avatar.resize((90, 90))
     im.paste(user_avatar, (44, 150), mask=user_avatar)
@@ -189,14 +192,18 @@ def _generate_info_pic_internal(data, cx, uid):
 
     return im
 
-def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
+async def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     '''
     好友支援位
     '''
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
-    pic_dir = asyncio.run(chara.fromid(id_friend_support).get_icon()).path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_friend_support).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_friend_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
@@ -215,14 +222,18 @@ def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
 
     return im
 
-def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
+async def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     '''
     地下城及战队支援位
     '''
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_clan_support = int(str(clan_data['unit_data']['id'])[0:4])
-    pic_dir = asyncio.run(chara.fromid(id_clan_support).get_icon()).path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_clan_support).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_clan_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
@@ -241,7 +252,7 @@ def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
 
     return im
 
-def _generate_support_pic_internal(data, uid):
+async def generate_support_pic(data, uid):
     '''
     支援界面图片合成
     '''
@@ -256,29 +267,23 @@ def _generate_support_pic_internal(data, uid):
     for fr_data in data['friend_support_units']: # 若列表为空，则不会进行循环
         if fr_data['position'] == 1: # 好友支援位1
             bbox = (1284, 156)
-            im = _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox)
+            im = await _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox)
         elif fr_data['position'] == 2: # 好友支援位2
             bbox = (1284, 459)
-            im = _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox)
+            im = await _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox)
 
     for clan_data in data['clan_support_units']:
         if clan_data['position'] == 1: # 地下城位置1
             bbox = (43, 156)
-            im = _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
+            im = await _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
         elif clan_data['position'] == 2: # 地下城位置2
             bbox = (43, 459)
-            im = _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
+            im = await _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
         elif clan_data['position'] == 3: # 战队位置1
             bbox = (665, 156)
-            im = _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
+            im = await _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
         elif clan_data['position'] == 4: # 战队位置2
             bbox = (665, 459)
-            im = _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
+            im = await _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
     
     return im
-
-async def generate_support_pic(*args, **kwargs):
-    return await run_sync_func(_generate_support_pic_internal, *args, **kwargs)
-
-async def generate_info_pic(*args, **kwargs):
-    return await run_sync_func(_generate_info_pic_internal, *args, **kwargs)
