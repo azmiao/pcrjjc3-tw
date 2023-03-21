@@ -65,9 +65,11 @@ async def generate_info_pic(data, cx, uid):
         id_favorite = int(str(data['favorite_unit']['id'])[0:4]) # 截取第1位到第4位的字符
     except:
         id_favorite = 1000 # 一个未知角色头像
-    # 需要较新版本的星乃支持，确保能顺利下载完成图片
-    pic_dir = await chara.fromid(id_favorite).get_icon()
-    pic_dir = pic_dir.path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_favorite).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_favorite).icon.path
     user_avatar = Image.open(pic_dir).convert("RGBA")
     user_avatar = user_avatar.resize((90, 90))
     im.paste(user_avatar, (44, 150), mask=user_avatar)
@@ -197,8 +199,11 @@ async def _friend_support_position(fr_data, im, fnt, rgb, im_frame, bbox):
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_friend_support = int(str(fr_data['unit_data']['id'])[0:4])
-    pic_dir = await chara.fromid(id_friend_support).get_icon()
-    pic_dir = pic_dir.path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_friend_support).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_friend_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
@@ -224,8 +229,11 @@ async def _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox):
     # 合成头像
     im_yuansu = Image.open(path / 'img' / 'yuansu.png').convert("RGBA") # 一个支援ui模板
     id_clan_support = int(str(clan_data['unit_data']['id'])[0:4])
-    pic_dir = await chara.fromid(id_clan_support).get_icon()
-    pic_dir = pic_dir.path
+    # 适配新版，兼容旧版
+    try:
+        pic_dir = (await chara.fromid(id_clan_support).get_icon()).path
+    except:
+        pic_dir = chara.fromid(id_clan_support).icon.path
     avatar = Image.open(pic_dir).convert("RGBA")
     avatar = avatar.resize((115, 115))
     im_yuansu.paste(im=avatar, box=(28, 78), mask=avatar)
@@ -279,9 +287,3 @@ async def generate_support_pic(data, uid):
             im = await _clan_support_position(clan_data, im, fnt, rgb, im_frame, bbox)
     
     return im
-
-# async def generate_support_pic(*args, **kwargs):
-#     return await run_sync_func(_generate_support_pic_internal, *args, **kwargs)
-#
-# async def generate_info_pic(*args, **kwargs):
-#     return await run_sync_func(_generate_info_pic_internal, *args, **kwargs)
