@@ -13,6 +13,10 @@ import json
 
 from hoshino.aiorequests import post
 
+# 读取代理配置
+with open(os.path.join(os.path.dirname(__file__), 'account.json')) as fp:
+    pinfo = json.load(fp)
+
 # 获取headers
 def get_headers():
     app_ver = get_ver()
@@ -40,11 +44,11 @@ def get_headers():
 
 # 获取版本号
 def get_ver():
-    app_url = 'https://apkimage.io/?q=tw.sonet.princessconnect'
-    app_res = requests.get(app_url, timeout=15)
+    app_url = 'https://apkcombo.com/zh/%E5%85%AC%E4%B8%BB%E9%80%A3%E7%B5%90/tw.sonet.princessconnect/'
+    app_res = requests.get(app_url, timeout=15, proxies=pinfo['proxy'])
     soup = BeautifulSoup(app_res.text, 'lxml')
-    ver_tmp = soup.find('span', text = re.compile(r'Version：(\d\.\d\.\d)'))
-    app_ver = ver_tmp.text.replace('Version：', '')
+    ver_tmp = soup.find('div', {"class": "version"})
+    app_ver = ver_tmp.text.strip()
     return str(app_ver)
 
 class ApiException(Exception):
