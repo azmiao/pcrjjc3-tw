@@ -44,10 +44,19 @@ def get_headers():
 
 # 获取版本号
 def get_ver():
-    app_url = 'https://apkcombo.com/zh/%E5%85%AC%E4%B8%BB%E9%80%A3%E7%B5%90/tw.sonet.princessconnect/'
-    app_res = requests.get(app_url, timeout=15, proxies=pinfo['proxy'])
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.37',
+        'Referer': 'https://apk-dl.com',
+        'Origin': 'https://apk-dl.com',
+        'Accept': '*/*',
+        'Connection': 'keep-alive',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, br',
+    }
+    app_url = 'https://apk-dl.com/tw.sonet.princessconnect'
+    app_res = requests.get(app_url, headers=headers, timeout=15, proxies=pinfo['proxy'])
     soup = BeautifulSoup(app_res.text, 'lxml')
-    ver_tmp = soup.find('div', {"class": "version"})
+    ver_tmp = soup.find('span', {"class": "version"})
     app_ver = ver_tmp.text.strip()
     return str(app_ver)
 
