@@ -518,7 +518,7 @@ async def see_a_see_frame(bot, ev):
     await bot.send(ev, msg)
 
 # 每隔6小时更新一次版本号
-@sv.scheduled_job('interval', hour='6')
+@sv.scheduled_job('interval', minutes=360)
 async def update_ver():
     header_path = os.path.join(os.path.dirname(__file__), 'headers.json')
     default_headers = get_headers()
