@@ -102,16 +102,16 @@ def judge_file(cx):
 # 获取配置文件
 def get_client():
     acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(1) else {'admin': ''}
-    client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID'], acinfo_1cx['VIEWER_ID'],
+    client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID_lowBits'], acinfo_1cx['VIEWER_ID_lowBits'],
         acinfo_1cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(1) else None
     acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(2) else {'admin': ''}
-    client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID'], acinfo_2cx['VIEWER_ID'],
+    client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID_lowBits'], acinfo_2cx['VIEWER_ID_lowBits'],
         acinfo_2cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(2) else None
     acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(3) else {'admin': ''}
-    client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID'], acinfo_3cx['VIEWER_ID'],
+    client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID_lowBits'], acinfo_3cx['VIEWER_ID_lowBits'],
         acinfo_3cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(3) else None
     acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(4) else {'admin': ''}
-    client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID'], acinfo_4cx['VIEWER_ID'],
+    client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID_lowBits'], acinfo_4cx['VIEWER_ID_lowBits'],
         acinfo_4cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(4) else None
     return client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx
 
