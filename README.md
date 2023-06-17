@@ -5,6 +5,8 @@
 ### 当然，pcrjjc3也有不带竞技场排名推送的版本，在[Lite分支](https://github.com/azmiao/pcrjjc3-tw/tree/lite)下
 ### 机器猫：更新支持了台服合服后版本，你必须更新你的账号文件才能使用
 
+## 本项目已更新另一个分支版本，自动兼容新旧版账号文件，[pcrjjc_tw_new](https://github.com/azmiao/pcrjjc_tw_new)
+
 ## 如何更新
 
 一直摸兜里，直接`git pull`就完事了
