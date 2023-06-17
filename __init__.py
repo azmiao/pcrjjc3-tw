@@ -178,7 +178,7 @@ async def pcrjjc_del(bot, ev):
             save_binds()
             await bot.send(ev, f'已清空全部【{num}】个已订阅账号！')
 
-@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\$)') # 支持匹配空格，空格可有可无且长度无限制
+@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\d{10})?$') # 支持匹配空格，空格可有可无且长度无限制
 async def on_arena_bind(bot, ev):
     global binds, lck
 
