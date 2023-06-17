@@ -178,7 +178,7 @@ async def pcrjjc_del(bot, ev):
             save_binds()
             await bot.send(ev, f'已清空全部【{num}】个已订阅账号！')
 
-@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\d{9})$') # 支持匹配空格，空格可有可无且长度无限制
+@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\$)') # 支持匹配空格，空格可有可无且长度无限制
 async def on_arena_bind(bot, ev):
     global binds, lck
 
@@ -205,7 +205,7 @@ async def on_arena_bind(bot, ev):
 
     await bot.finish(ev, msg, at_sender=True)
 
-@sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{9})?$')
+@sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{10})?$')
 async def on_query_arena(bot, ev):
     global binds, lck
 
@@ -272,7 +272,7 @@ async def send_parena_history(bot, ev):
         msg = f'\n{JJCH._select(ID, 0)}'
         await bot.finish(ev, msg, at_sender=True)
 
-@sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
+@sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{10})?$')
 async def on_query_arena_all(bot, ev):
     global binds, lck
 
