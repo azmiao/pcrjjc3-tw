@@ -31,7 +31,7 @@ def decryptxml(filename):
         if key == 'UDID':
             val = ''.join([chr(val[4 * i + 6] - 10) for i in range(36)])
         elif len(val) == 4:
-            val = str(unpack('i', val)[0])
+            val = str(unpack('I', val)[0])
         result[key] = val
         #except:
         #    pass
