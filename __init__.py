@@ -22,8 +22,8 @@ sv_help = '''
 注意：数字3为服务器编号，支持1、2、3或4
 关键词之间可以留空格也可以不留
 
-[竞技场绑定 3 uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送
-[竞技场查询 3 uid] 查询竞技场简要信息（绑定后无需输入3 uid）
+[竞技场绑定 10位uid] 绑定竞技场排名变动推送，默认双场均启用，仅排名降低时推送 也可以使用旧格式 [竞技场绑定 3 9位uid]
+[竞技场查询 10位uid] 查询竞技场简要信息（绑定后无需输入3 uid） 也可以使用旧格式 [竞技场绑定 3 9位uid]
 [停止竞技场订阅] 停止战斗竞技场排名变动推送
 [停止公主竞技场订阅] 停止公主竞技场排名变动推送
 [启用竞技场订阅] 启用战斗竞技场排名变动推送
@@ -32,7 +32,7 @@ sv_help = '''
 [公主竞技场历史] 查询公主竞技场变化记录（公主竞技场订阅开启有效，可保留10条）
 [删除竞技场订阅] 删除竞技场排名变动推送绑定
 [竞技场订阅状态] 查看排名变动推送绑定状态
-[详细查询 3 uid] 查询账号详细信息（绑定后无需输入3 uid）
+[详细查询 10位uid] 查询账号详细信息（绑定后无需输入uid） 也可以使用旧格式 [详细查询 3 9位uid]
 [查询群数] 查询bot所在群的数目
 [查询竞技场订阅数] 查询绑定账号的总数量
 [查询头像框] 查看自己设置的详细查询里的角色头像框
@@ -104,30 +104,42 @@ def get_client():
     acinfo_1cx = decryptxml(join(curpath, '1cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(1) else {'admin': ''}
     client_1cx = pcrclient(acinfo_1cx['UDID'], acinfo_1cx['SHORT_UDID_lowBits'], acinfo_1cx['VIEWER_ID_lowBits'],
         acinfo_1cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(1) else None
-    acinfo_2cx = decryptxml(join(curpath, '2cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(2) else {'admin': ''}
-    client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID_lowBits'], acinfo_2cx['VIEWER_ID_lowBits'],
-        acinfo_2cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(2) else None
-    acinfo_3cx = decryptxml(join(curpath, '3cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(3) else {'admin': ''}
-    client_3cx = pcrclient(acinfo_3cx['UDID'], acinfo_3cx['SHORT_UDID_lowBits'], acinfo_3cx['VIEWER_ID_lowBits'],
-        acinfo_3cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(3) else None
-    acinfo_4cx = decryptxml(join(curpath, '4cx_tw.sonet.princessconnect.v2.playerprefs.xml')) if judge_file(4) else {'admin': ''}
-    client_4cx = pcrclient(acinfo_4cx['UDID'], acinfo_4cx['SHORT_UDID_lowBits'], acinfo_4cx['VIEWER_ID_lowBits'],
-        acinfo_4cx['TW_SERVER_ID'], pinfo['proxy']) if judge_file(4) else None
-    return client_1cx, client_2cx, client_3cx, client_4cx, acinfo_1cx, acinfo_2cx, acinfo_3cx, acinfo_4cx
 
-async def query(cx:str, id: str):
-    client_1cx, client_2cx, client_3cx, client_4cx, _, _, _, _ = get_client()
+    # 判断2~4服客户端所用账号的服务器号
+    cx5 = 0
+    if judge_file(2):
+        cx5 = 2
+    elif judge_file(3):
+        cx5 = 3
+    elif judge_file(4):
+        cx5 = 4
+
+    if cx5 == 0:
+        acinfo_2cx = {'admin': ''}
+        client_2cx = None
+    else:
+        # 2~4服统一为client_2cx
+        acinfo_2cx = decryptxml(join(curpath, str(cx5) + 'cx_tw.sonet.princessconnect.v2.playerprefs.xml'))
+        client_2cx = pcrclient(acinfo_2cx['UDID'], acinfo_2cx['SHORT_UDID_lowBits'], acinfo_2cx['VIEWER_ID_lowBits'],
+                               acinfo_2cx['TW_SERVER_ID'], pinfo['proxy'])
+
+    return client_1cx, client_2cx, acinfo_1cx, acinfo_2cx
+
+
+async def query(cx: str, id: str):
+    client_1cx, client_2cx, _, _ = get_client()
     if cx == '1': client = client_1cx
-    elif cx == '2': client = client_2cx
-    elif cx == '3': client = client_3cx
-    else: client = client_4cx
-    if client == None:
+    elif cx == '2' or cx == '3' or cx == '4':
+        client = client_2cx
+    else:
+        client = None
+    if client is None:
         return 'lack shareprefs'
     async with qlck:
         while client.shouldLogin:
             await client.login()
         res = (await client.callapi('/profile/get_profile', {
-                'target_viewer_id': int(id)
+                'target_viewer_id': int(cx + id)
             }))
         return res
 
@@ -178,7 +190,7 @@ async def pcrjjc_del(bot, ev):
             save_binds()
             await bot.send(ev, f'已清空全部【{num}】个已订阅账号！')
 
-@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\d{10})?$') # 支持匹配空格，空格可有可无且长度无限制
+@sv.on_rex(r'^竞技场绑定\s*(\d)\s*(\d{9})?$') # 支持匹配空格，空格可有可无且长度无限制
 async def on_arena_bind(bot, ev):
     global binds, lck
 
@@ -205,7 +217,7 @@ async def on_arena_bind(bot, ev):
 
     await bot.finish(ev, msg, at_sender=True)
 
-@sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{10})?$')
+@sv.on_rex(r'^竞技场查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena(bot, ev):
     global binds, lck
 
@@ -272,7 +284,7 @@ async def send_parena_history(bot, ev):
         msg = f'\n{JJCH._select(ID, 0)}'
         await bot.finish(ev, msg, at_sender=True)
 
-@sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{10})?$')
+@sv.on_rex(r'^详细查询\s*(\d)?\s*(\d{9})?$')
 async def on_query_arena_all(bot, ev):
     global binds, lck
 
